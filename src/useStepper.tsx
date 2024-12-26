@@ -15,7 +15,7 @@ import { StepsContext } from './StepsContext';
  * Used in components that only consume the context, without managing the steps.
  * You can pass a generic type to type the step state.
  * ```tsx
- * const { onNext, activeStep, stepState } = useStepper<TGeneric>();
+ * const { onNext, activeStep } = useStepper<TGeneric>();
  *
  * const handleNext = () => {
  *   onNext();
@@ -36,11 +36,11 @@ import { StepsContext } from './StepsContext';
  *   { name: 'Step 1', component: <div>Step 1</div> },
  *   { name: 'Step 2', component: <div>Step 2</div> },
  * ];
- * const { activeStep, goToStep } = useStepper({ steps });
+ * const { stepperState, goToStep } = useStepper({ steps });
  *
  * return (
  *   <div>
- *     {steps.map((step, index) => (
+ *     {stepperState.steps.map((step, index) => (
  *       <button key={index} onClick={() => goToStep(index)}>
  *         {step.name}
  *       </button>
@@ -53,7 +53,7 @@ import { StepsContext } from './StepsContext';
 export const useStepper = <T,>(config?: StepperConfig) => {
   const context: StepperContext<T> | null = useContext(StepsContext);
   if (!context) {
-    throw new Error('useStep must be used within a StepProvider');
+    throw new Error('useStepper must be used within a StepProvider');
   }
 
   const {

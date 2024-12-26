@@ -19,7 +19,7 @@ npm i react-stepper-control
 Install the library using pnpm or yarn:
 
 ```bash
-pnpm add react-stepper-control
+pnpm i react-stepper-control
 ```
 
 ```bash
@@ -369,53 +369,53 @@ Example of using the component, after being created on a page:
 import { StepsWithProvider, useStepper, StepConfig, ValidationConfigStepper } from "react-hook-stepper";
 
 export const CustomSteper = ({
-  steps,
-  title,
+ steps,
+ title,
 }: {
-  steps: StepConfig[];
-  title?: string;
-  config: ValidationConfigStepper;
+ steps: StepConfig[];
+ title?: string;
+ config: ValidationConfigStepper;
 }) => {
-  const { stepperState, activeStep, goToStep } = useStepper({ steps, ...config }); // Use the custom hook to manage steps, just pass the steps in main component
+ const { stepperState, activeStep, goToStep } = useStepper({ steps, ...config }); // Use the custom hook to manage steps, just pass the steps in main component
 
-  return (
-    <div>
-      <h1>{title}</h1>
-      <div>
-        {stepperState.steps.map((step, index) => (
-          <div key={index}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div onClick={() => goToStep(index)}>
-                {activeStep.index > index ? "✔" : index + 1}
-              </div>
-              <div>{step.name}</div>
-            </div>
-            {activeStep.index === index && (
-              <div> {steps[activeStep.index].component}</div>
-            )}
-          </div>
-        ))}
+ return (
+  <div>
+   <h1>{title}</h1>
+   <div>
+    {stepperState.steps.map((step, index) => (
+     <div key={index}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div onClick={() => goToStep(index)}>
+          {activeStep.index > index ? "✔" : index + 1}
+        </div>
+        <div>{step.name}</div>
       </div>
-    </div>
-  );
+      {activeStep.index === index && (
+        <div> {steps[activeStep.index].component}</div>
+      )}
+     </div>
+    ))}
+   </div>
+  </div>
+ );
 };
 
 const HomePage = () => {
-  return (
-    <div>
-      <CustomSteper
-        config={{
-         // your config
-        }}
-        steps={[
-          { name: "Step 1", component: <Step1 /> },
-          { name: "Step 2", component: <Step2 /> },
-          { name: "Step 3", component: <Step3 /> },
-          { name: "Step 4", component: <Step4 />, isOptional: true },
-        ]}
-      />
-    </div>
-  );
+ return (
+  <div>
+   <CustomSteper
+    config={{
+     // your config
+    }}
+    steps={[
+     { name: "Step 1", component: <Step1 /> },
+     { name: "Step 2", component: <Step2 /> },
+     { name: "Step 3", component: <Step3 /> },
+     { name: "Step 4", component: <Step4 />, isOptional: true },
+    ]}
+   />
+  </div>
+ );
 };
 
 export default StepsWithProvider(HomePage); // remember to use `StepsWithProvider` to provide the context for the entire flow
