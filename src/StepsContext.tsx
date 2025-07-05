@@ -62,11 +62,19 @@ export const StepsProvider = <T,>({
     config,
   });
 
+  const currentActiveStep = stepperState.steps[currentStep] || {
+    name: '',
+    canAccess: false,
+    canEdit: false,
+    isOptional: false,
+    isCompleted: false,
+  };
+
   return (
     <StepsContext.Provider
       value={{
         activeStep: {
-          ...stepperState.steps[currentStep],
+          ...currentActiveStep,
           index: currentStep,
           isLastStep: currentStep === stepperState.generalInfo.totalSteps - 1,
           isFirstStep: currentStep === 0,

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { StepperConfig, StepperContext, StepperState } from './types/StepTypes';
 import { StepsContext } from './StepsContext';
 
@@ -63,9 +63,17 @@ export const useStepper = <T,>(config?: StepperConfig) => {
     ...stepContext
   } = context;
 
+  const configRef = useRef<StepperConfig | undefined>();
+
   useEffect(() => {
     if (!config) return;
 
+    // Check if config has actually changed
+    if (configRef.current === config) return;
+    
+    configRef.current = config;
+
+    // Apply config changes
     updateConfig(config);
 
     if (config.steps) {
@@ -73,16 +81,20 @@ export const useStepper = <T,>(config?: StepperConfig) => {
     }
 
     if (config.saveLocalStorage) {
-      const localStorageitem = localStorage.getItem('stepperState');
-      const stepsSavedLocalStorage: StepperState<T> | null = localStorageitem
-        ? JSON.parse(localStorageitem)
-        : null;
+      try {
+        const localStorageitem = localStorage.getItem('stepperState');
+        const stepsSavedLocalStorage: StepperState<T> | null = localStorageitem
+          ? JSON.parse(localStorageitem)
+          : null;
 
-      if (stepsSavedLocalStorage) {
-        updateStateWithLocalStorage(stepsSavedLocalStorage);
+        if (stepsSavedLocalStorage) {
+          updateStateWithLocalStorage(stepsSavedLocalStorage);
+        }
+      } catch (error) {
+        console.error('Error reading from localStorage:', error);
       }
     }
-  }, [config, updateConfig, setStepsInfo, updateStateWithLocalStorage]);
+  }, [config]);
 
   return stepContext;
 };

@@ -70,16 +70,16 @@ export const useStepNavigation = <T,>({
     });
   }, [config]);
 
-  const saveToLocalStorage = useCallback((state: StepperState<T>) => {
+  const saveToLocalStorage = useCallback((state: StepperState<T>, targetStep: number) => {
     if (config.saveLocalStorage) {
-      localStorage.setItem('stepperState', JSON.stringify(state));
-      
       // Remove from localStorage if it's the last step
-      if (currentStep === state.generalInfo.totalSteps - 1) {
+      if (targetStep === state.generalInfo.totalSteps - 1) {
         localStorage.removeItem('stepperState');
+      } else {
+        localStorage.setItem('stepperState', JSON.stringify(state));
       }
     }
-  }, [config.saveLocalStorage, currentStep]);
+  }, [config.saveLocalStorage]);
 
   const executeStepNavigation = useCallback(async (
     targetStep: number,
@@ -121,7 +121,7 @@ export const useStepNavigation = <T,>({
       };
 
       // Save to localStorage
-      saveToLocalStorage(currentState);
+      saveToLocalStorage(currentState, targetStep);
 
       // Execute callback if provided
       if (onCompleteStep) {
@@ -132,7 +132,7 @@ export const useStepNavigation = <T,>({
       setCurrentStep(targetStep);
     } catch (error) {
       console.error('Error in step navigation:', error);
-      throw error;
+      // Don't re-throw the error, just log it
     } finally {
       setLoading(false);
     }
@@ -189,11 +189,11 @@ export const useStepNavigation = <T,>({
         updateGeneralStates?: { stepIndex?: number; data: Partial<T> };
       },
     ) => {
-      if (nextStep === currentStep) return;
-
       if (nextStep < 0 || nextStep >= stepperState.generalInfo.totalSteps) {
         throw new Error(`The step ${nextStep} does not exist.`);
       }
+
+      if (nextStep === currentStep) return;
 
       const validationCanAccess = config?.validations?.goToStep?.canAccess ?? true;
 

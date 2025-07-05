@@ -24,24 +24,23 @@ export const useStepsActions = <T,>({
   }, [config.saveLocalStorage]);
 
   const setStepsInfo = useCallback((steps: StepConfig[]) => {
-    const newState = {
-      ...stepperState,
+    updateStepperState((prevState) => ({
+      ...prevState,
       generalInfo: {
         totalSteps: steps.length,
         currentProgress: 0,
         completedProgress: 0,
         canAccessProgress: 0,
       },
-      steps: steps.map((step: StepConfig) => ({
+      steps: steps.map((step: StepConfig, index: number) => ({
         name: step.name,
-        canAccess: step.canAccess || false,
-        canEdit: step.canEdit || false,
+        canAccess: step.canAccess !== undefined ? step.canAccess : true, // Default to true to allow navigation
+        canEdit: step.canEdit !== undefined ? step.canEdit : true,
         isOptional: step.isOptional || false,
         isCompleted: step.isCompleted || false,
       })),
-    };
-    updateStepperState(newState);
-  }, [stepperState, updateStepperState]);
+    }));
+  }, [updateStepperState]);
 
   const updateStateWithLocalStorage = useCallback(
     (stepperState: StepperState<T>) => {
@@ -55,8 +54,8 @@ export const useStepsActions = <T,>({
         },
         steps: stepperState.steps.map((step) => ({
           name: step.name,
-          canAccess: step.canAccess || false,
-          canEdit: step.canEdit || false,
+          canAccess: step.canAccess !== undefined ? step.canAccess : true,
+          canEdit: step.canEdit !== undefined ? step.canEdit : true,
           isOptional: step.isOptional || false,
           isCompleted: step.isCompleted || false,
         })),
