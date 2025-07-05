@@ -46,7 +46,7 @@ const Step1 = () => {
     <div>
       <h2>Welcome to Step 1</h2>
       <p>
-        Step {activeStep.index + 1} of {stepperState.steps.length}
+        Step {activeStep.index + 1} of {stepperState.generalInfo.totalSteps}
       </p>
       <button onClick={() => onNext()}>Next</button>
     </div>

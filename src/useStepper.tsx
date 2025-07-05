@@ -56,12 +56,7 @@ export const useStepper = <T,>(config?: StepperConfig) => {
     throw new Error('useStepper must be used within a StepProvider');
   }
 
-  const {
-    updateConfig,
-    setStepsInfo,
-    updateStateWithLocalStorage,
-    ...stepContext
-  } = context;
+  const { updateConfig, setStepsInfo, ...stepContext } = context;
 
   const configRef = useRef<StepperConfig | undefined>();
 
@@ -72,21 +67,21 @@ export const useStepper = <T,>(config?: StepperConfig) => {
     const hasConfigChanged = () => {
       const prev = configRef.current;
       if (!prev) return true;
-      
+
       // Compare basic properties
       if (prev.saveLocalStorage !== config.saveLocalStorage) return true;
-      
+
       // Compare steps array length and basic properties
       const prevSteps = prev.steps || [];
       const currentSteps = config.steps || [];
-      
+
       if (prevSteps.length !== currentSteps.length) return true;
-      
+
       // Compare step properties (excluding component which can have circular refs)
       for (let i = 0; i < currentSteps.length; i++) {
         const prevStep = prevSteps[i];
         const currentStep = currentSteps[i];
-        
+
         if (!prevStep || !currentStep) return true;
         if (prevStep.name !== currentStep.name) return true;
         if (prevStep.canAccess !== currentStep.canAccess) return true;
@@ -94,19 +89,23 @@ export const useStepper = <T,>(config?: StepperConfig) => {
         if (prevStep.isOptional !== currentStep.isOptional) return true;
         if (prevStep.isCompleted !== currentStep.isCompleted) return true;
       }
-      
+
       // Compare validation config
       const prevValidations = prev.validations || {};
       const currentValidations = config.validations || {};
-      
+
       // Compare validations object - we know it has a specific structure
-      if (prevValidations.goToStep?.canAccess !== currentValidations.goToStep?.canAccess) return true;
-      
+      if (
+        prevValidations.goToStep?.canAccess !==
+        currentValidations.goToStep?.canAccess
+      )
+        return true;
+
       return false;
     };
 
     if (!hasConfigChanged()) return;
-    
+
     configRef.current = config;
 
     // Apply config changes
@@ -115,22 +114,7 @@ export const useStepper = <T,>(config?: StepperConfig) => {
     if (config.steps) {
       setStepsInfo(config.steps);
     }
-
-    if (config.saveLocalStorage) {
-      try {
-        const localStorageitem = localStorage.getItem('stepperState');
-        const stepsSavedLocalStorage: StepperState<T> | null = localStorageitem
-          ? JSON.parse(localStorageitem)
-          : null;
-
-        if (stepsSavedLocalStorage) {
-          updateStateWithLocalStorage(stepsSavedLocalStorage);
-        }
-      } catch (error) {
-        console.error('Error reading from localStorage:', error);
-      }
-    }
-  }, [config, updateConfig, setStepsInfo, updateStateWithLocalStorage]);
+  }, [config, updateConfig, setStepsInfo]);
 
   return stepContext;
 };

@@ -19,9 +19,7 @@ const mockConfig: StepperConfig = {
 // Wrapper component for testing
 const createWrapper = (initialConfig?: StepperConfig) => {
   return ({ children }: { children: React.ReactNode }) => (
-    <StepsProvider initialConfig={initialConfig}>
-      {children}
-    </StepsProvider>
+    <StepsProvider initialConfig={initialConfig}>{children}</StepsProvider>
   );
 };
 
@@ -89,11 +87,34 @@ describe('useStepper', () => {
     };
 
     const mockSavedState = {
-      generalInfo: { totalSteps: 3, currentProgress: 0.33, completedProgress: 0.33, canAccessProgress: 0.33 },
+      generalInfo: {
+        totalSteps: 3,
+        currentProgress: 0.33,
+        completedProgress: 0.33,
+        canAccessProgress: 0.33,
+      },
       steps: [
-        { name: 'Step 1', canAccess: true, canEdit: true, isOptional: false, isCompleted: true },
-        { name: 'Step 2', canAccess: true, canEdit: true, isOptional: false, isCompleted: false },
-        { name: 'Step 3', canAccess: false, canEdit: false, isOptional: false, isCompleted: false },
+        {
+          name: 'Step 1',
+          canAccess: true,
+          canEdit: true,
+          isOptional: false,
+          isCompleted: true,
+        },
+        {
+          name: 'Step 2',
+          canAccess: true,
+          canEdit: true,
+          isOptional: false,
+          isCompleted: false,
+        },
+        {
+          name: 'Step 3',
+          canAccess: false,
+          canEdit: false,
+          isOptional: false,
+          isCompleted: false,
+        },
       ],
       generalState: {},
     };
@@ -112,8 +133,17 @@ describe('useStepper', () => {
   });
 
   it('should not initialize when no config is provided', () => {
+    // Clear localStorage before test
+    localStorage.removeItem('stepperState');
+
+    // Create wrapper with saveLocalStorage disabled
+    const configWithoutLocalStorage = {
+      steps: [],
+      saveLocalStorage: false,
+    };
+
     const { result } = renderHook(() => useStepper(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper(configWithoutLocalStorage),
     });
 
     expect(result.current.stepperState.generalInfo.totalSteps).toBe(0);
@@ -157,7 +187,7 @@ describe('useStepper', () => {
       {
         wrapper: createWrapper(),
         initialProps: { config: mockConfig },
-      }
+      },
     );
 
     const newConfig: StepperConfig = {

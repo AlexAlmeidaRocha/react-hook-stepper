@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StepperState,
   StepperContext,
@@ -8,15 +8,49 @@ import {
 import { useStepsActions } from './useStepsActions';
 import { useStepNavigation } from './useStepNavigation';
 
-const initialState: StepperState<any> = {
-  generalInfo: {
-    totalSteps: 0,
-    currentProgress: 0,
-    completedProgress: 0,
-    canAccessProgress: 0,
-  },
-  steps: [],
-  generalState: {},
+const createInitialState = <T,>(
+  config?: StepperConfig,
+): { state: StepperState<T>; currentStep: number } => {
+  const baseState: StepperState<T> = {
+    generalInfo: {
+      totalSteps: 0,
+      currentProgress: 0,
+      completedProgress: 0,
+      canAccessProgress: 0,
+    },
+    steps: [],
+    generalState: {} as T,
+    isLoadedFromLocalStorage: false,
+  };
+
+  // Se saveLocalStorage está habilitado, tenta carregar do localStorage
+  if (config?.saveLocalStorage) {
+    try {
+      const localStorageItem = localStorage.getItem('stepperState');
+      if (localStorageItem) {
+        const savedState: StepperState<T> = JSON.parse(localStorageItem);
+
+        const completedSteps = savedState.steps.filter(
+          (step) => step.isCompleted,
+        ).length;
+
+        return {
+          state: {
+            ...savedState,
+            isLoadedFromLocalStorage: true,
+          },
+          currentStep: completedSteps,
+        };
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
+    }
+  }
+
+  return {
+    state: baseState,
+    currentStep: 0,
+  };
 };
 
 const defaultConfig: StepperConfig = {
@@ -32,9 +66,15 @@ export const StepsProvider = <T,>({
   children,
   initialConfig = defaultConfig,
 }: StepProvider<T>) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  // Carrega o estado inicial do localStorage se disponível
+  const initialStateData = useMemo(
+    () => createInitialState<T>(initialConfig),
+    [initialConfig],
+  );
+
+  const [currentStep, setCurrentStep] = useState(initialStateData.currentStep);
   const [loading, setLoading] = useState(false);
-  const [stepperState, updateStepperState] = useState(initialState);
+  const [stepperState, updateStepperState] = useState(initialStateData.state);
   const [config, setConfig] = useState<StepperConfig>(initialConfig);
 
   const {
@@ -42,7 +82,6 @@ export const StepsProvider = <T,>({
     updateSteps,
     updateGeneralState,
     updateConfig,
-    updateStateWithLocalStorage,
     cleanLocalStorage,
   } = useStepsActions<T>({
     updateStepperState,
@@ -87,7 +126,6 @@ export const StepsProvider = <T,>({
         updateGeneralState,
         updateConfig,
         setStepsInfo,
-        updateStateWithLocalStorage,
         updateSteps,
         cleanLocalStorage,
       }}

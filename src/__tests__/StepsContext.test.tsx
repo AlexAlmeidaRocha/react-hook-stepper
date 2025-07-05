@@ -9,18 +9,24 @@ import { StepperConfig } from '../types/StepTypes';
 // Mock components
 const TestComponent = () => {
   const context = useContext(StepsContext);
-  
+
   if (!context) {
     return <div>No context</div>;
   }
 
   return (
     <div>
-      <div data-testid="total-steps">{context.stepperState.generalInfo.totalSteps}</div>
+      <div data-testid="total-steps">
+        {context.stepperState.generalInfo.totalSteps}
+      </div>
       <div data-testid="current-step">{context.activeStep.index}</div>
       <div data-testid="active-step-name">{context.activeStep.name}</div>
-      <div data-testid="is-first-step">{context.activeStep.isFirstStep.toString()}</div>
-      <div data-testid="is-last-step">{context.activeStep.isLastStep.toString()}</div>
+      <div data-testid="is-first-step">
+        {context.activeStep.isFirstStep.toString()}
+      </div>
+      <div data-testid="is-last-step">
+        {context.activeStep.isLastStep.toString()}
+      </div>
       <div data-testid="loading">{context.loading.toString()}</div>
       <button data-testid="next-button" onClick={() => context.onNext()}>
         Next
@@ -62,7 +68,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponent />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     expect(screen.getByTestId('total-steps')).toHaveTextContent('0');
@@ -76,18 +82,24 @@ describe('StepsContext', () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
       const stepper = useStepper(mockConfig);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
 
       return (
         <div>
-          <div data-testid="total-steps">{context.stepperState.generalInfo.totalSteps}</div>
+          <div data-testid="total-steps">
+            {context.stepperState.generalInfo.totalSteps}
+          </div>
           <div data-testid="current-step">{context.activeStep.index}</div>
           <div data-testid="active-step-name">{context.activeStep.name}</div>
-          <div data-testid="is-first-step">{context.activeStep.isFirstStep.toString()}</div>
-          <div data-testid="is-last-step">{context.activeStep.isLastStep.toString()}</div>
+          <div data-testid="is-first-step">
+            {context.activeStep.isFirstStep.toString()}
+          </div>
+          <div data-testid="is-last-step">
+            {context.activeStep.isLastStep.toString()}
+          </div>
         </div>
       );
     };
@@ -95,7 +107,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     expect(screen.getByTestId('total-steps')).toHaveTextContent('3');
@@ -108,7 +120,7 @@ describe('StepsContext', () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
       const stepper = useStepper(mockConfig);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
@@ -117,8 +129,12 @@ describe('StepsContext', () => {
         <div>
           <div data-testid="current-step">{context.activeStep.index}</div>
           <div data-testid="active-step-name">{context.activeStep.name}</div>
-          <div data-testid="is-first-step">{context.activeStep.isFirstStep.toString()}</div>
-          <div data-testid="is-last-step">{context.activeStep.isLastStep.toString()}</div>
+          <div data-testid="is-first-step">
+            {context.activeStep.isFirstStep.toString()}
+          </div>
+          <div data-testid="is-last-step">
+            {context.activeStep.isLastStep.toString()}
+          </div>
           <button data-testid="next-button" onClick={() => context.onNext()}>
             Next
           </button>
@@ -129,12 +145,12 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     // Wait for initialization
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
     // Initial state
@@ -156,7 +172,7 @@ describe('StepsContext', () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
       const stepper = useStepper(mockConfig);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
@@ -165,9 +181,15 @@ describe('StepsContext', () => {
         <div>
           <div data-testid="current-step">{context.activeStep.index}</div>
           <div data-testid="active-step-name">{context.activeStep.name}</div>
-          <div data-testid="is-first-step">{context.activeStep.isFirstStep.toString()}</div>
-          <div data-testid="is-last-step">{context.activeStep.isLastStep.toString()}</div>
-          <div data-testid="total-steps">{context.stepperState.generalInfo.totalSteps}</div>
+          <div data-testid="is-first-step">
+            {context.activeStep.isFirstStep.toString()}
+          </div>
+          <div data-testid="is-last-step">
+            {context.activeStep.isLastStep.toString()}
+          </div>
+          <div data-testid="total-steps">
+            {context.stepperState.generalInfo.totalSteps}
+          </div>
           <button data-testid="next-button" onClick={() => context.onNext()}>
             Next
           </button>
@@ -181,12 +203,12 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     // Wait for initialization
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     // Check that steps are loaded
@@ -207,7 +229,7 @@ describe('StepsContext', () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
       const stepper = useStepper(mockConfig);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
@@ -216,7 +238,9 @@ describe('StepsContext', () => {
         <div>
           <div data-testid="current-step">{context.activeStep.index}</div>
           <div data-testid="active-step-name">{context.activeStep.name}</div>
-          <div data-testid="is-first-step">{context.activeStep.isFirstStep.toString()}</div>
+          <div data-testid="is-first-step">
+            {context.activeStep.isFirstStep.toString()}
+          </div>
           <button data-testid="next-button" onClick={() => context.onNext()}>
             Next
           </button>
@@ -230,12 +254,12 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     // Wait for initialization
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
     // Navigate to step 1 first
@@ -259,7 +283,7 @@ describe('StepsContext', () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
       const stepper = useStepper(mockConfig);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
@@ -277,12 +301,12 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     // Wait for initialization
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
@@ -305,7 +329,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider initialConfig={emptyConfig}>
         <TestComponent />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     expect(screen.getByTestId('total-steps')).toHaveTextContent('0');
@@ -318,21 +342,39 @@ describe('StepsContext', () => {
   it('should provide all required context methods', () => {
     const MethodTestComponent = () => {
       const context = useContext(StepsContext);
-      
+
       if (!context) {
         return <div>No context</div>;
       }
 
       return (
         <div>
-          <div data-testid="has-onNext">{typeof context.onNext === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-onPrev">{typeof context.onPrev === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-goToStep">{typeof context.goToStep === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-updateGeneralState">{typeof context.updateGeneralState === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-updateConfig">{typeof context.updateConfig === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-setStepsInfo">{typeof context.setStepsInfo === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-updateSteps">{typeof context.updateSteps === 'function' ? 'true' : 'false'}</div>
-          <div data-testid="has-cleanLocalStorage">{typeof context.cleanLocalStorage === 'function' ? 'true' : 'false'}</div>
+          <div data-testid="has-onNext">
+            {typeof context.onNext === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-onPrev">
+            {typeof context.onPrev === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-goToStep">
+            {typeof context.goToStep === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-updateGeneralState">
+            {typeof context.updateGeneralState === 'function'
+              ? 'true'
+              : 'false'}
+          </div>
+          <div data-testid="has-updateConfig">
+            {typeof context.updateConfig === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-setStepsInfo">
+            {typeof context.setStepsInfo === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-updateSteps">
+            {typeof context.updateSteps === 'function' ? 'true' : 'false'}
+          </div>
+          <div data-testid="has-cleanLocalStorage">
+            {typeof context.cleanLocalStorage === 'function' ? 'true' : 'false'}
+          </div>
         </div>
       );
     };
@@ -340,16 +382,20 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <MethodTestComponent />
-      </StepsProvider>
+      </StepsProvider>,
     );
 
     expect(screen.getByTestId('has-onNext')).toHaveTextContent('true');
     expect(screen.getByTestId('has-onPrev')).toHaveTextContent('true');
     expect(screen.getByTestId('has-goToStep')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-updateGeneralState')).toHaveTextContent('true');
+    expect(screen.getByTestId('has-updateGeneralState')).toHaveTextContent(
+      'true',
+    );
     expect(screen.getByTestId('has-updateConfig')).toHaveTextContent('true');
     expect(screen.getByTestId('has-setStepsInfo')).toHaveTextContent('true');
     expect(screen.getByTestId('has-updateSteps')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-cleanLocalStorage')).toHaveTextContent('true');
+    expect(screen.getByTestId('has-cleanLocalStorage')).toHaveTextContent(
+      'true',
+    );
   });
 });

@@ -12,9 +12,27 @@ const mockStepperState: StepperState<any> = {
     canAccessProgress: 0.33,
   },
   steps: [
-    { name: 'Step 1', canAccess: true, canEdit: true, isOptional: false, isCompleted: false },
-    { name: 'Step 2', canAccess: true, canEdit: true, isOptional: false, isCompleted: false },
-    { name: 'Step 3', canAccess: false, canEdit: false, isOptional: false, isCompleted: false },
+    {
+      name: 'Step 1',
+      canAccess: true,
+      canEdit: true,
+      isOptional: false,
+      isCompleted: false,
+    },
+    {
+      name: 'Step 2',
+      canAccess: true,
+      canEdit: true,
+      isOptional: false,
+      isCompleted: false,
+    },
+    {
+      name: 'Step 3',
+      canAccess: false,
+      canEdit: false,
+      isOptional: false,
+      isCompleted: false,
+    },
   ],
   generalState: { testData: 'initial' },
 };
@@ -45,7 +63,7 @@ describe('useStepsActions', () => {
   const renderUseStepsActions = (
     stepperState: StepperState<any> = mockStepperState,
     currentStep: number = 0,
-    config: StepperConfig = mockConfig
+    config: StepperConfig = mockConfig,
   ) => {
     return renderHook(() =>
       useStepsActions({
@@ -55,7 +73,7 @@ describe('useStepsActions', () => {
         setCurrentStep: mockSetCurrentStep,
         setConfig: mockSetConfig,
         config,
-      })
+      }),
     );
   };
 
@@ -67,14 +85,12 @@ describe('useStepsActions', () => {
         result.current.setStepsInfo(mockSteps);
       });
 
-      expect(mockUpdateStepperState).toHaveBeenCalledWith(
-        expect.any(Function)
-      );
-      
+      expect(mockUpdateStepperState).toHaveBeenCalledWith(expect.any(Function));
+
       // Test the function passed to updateStepperState
       const updateFunction = mockUpdateStepperState.mock.calls[0][0];
       const newState = updateFunction(mockStepperState);
-      
+
       expect(newState).toEqual(
         expect.objectContaining({
           generalInfo: expect.objectContaining({
@@ -92,14 +108,14 @@ describe('useStepsActions', () => {
               isCompleted: false,
             }),
           ]),
-        })
+        }),
       );
     });
 
     it('should handle steps with predefined properties', () => {
       const stepsWithProperties: StepConfig[] = [
-        { 
-          name: 'Step 1', 
+        {
+          name: 'Step 1',
           component: <div>Step 1</div>,
           canAccess: true,
           canEdit: true,
@@ -114,14 +130,12 @@ describe('useStepsActions', () => {
         result.current.setStepsInfo(stepsWithProperties);
       });
 
-      expect(mockUpdateStepperState).toHaveBeenCalledWith(
-        expect.any(Function)
-      );
-      
+      expect(mockUpdateStepperState).toHaveBeenCalledWith(expect.any(Function));
+
       // Test the function passed to updateStepperState
       const updateFunction = mockUpdateStepperState.mock.calls[0][0];
       const newState = updateFunction(mockStepperState);
-      
+
       expect(newState).toEqual(
         expect.objectContaining({
           steps: expect.arrayContaining([
@@ -133,7 +147,7 @@ describe('useStepsActions', () => {
               isCompleted: true,
             }),
           ]),
-        })
+        }),
       );
     });
 
@@ -144,74 +158,20 @@ describe('useStepsActions', () => {
         result.current.setStepsInfo([]);
       });
 
-      expect(mockUpdateStepperState).toHaveBeenCalledWith(
-        expect.any(Function)
-      );
-      
+      expect(mockUpdateStepperState).toHaveBeenCalledWith(expect.any(Function));
+
       // Test the function passed to updateStepperState
       const updateFunction = mockUpdateStepperState.mock.calls[0][0];
       const newState = updateFunction(mockStepperState);
-      
+
       expect(newState).toEqual(
         expect.objectContaining({
           generalInfo: expect.objectContaining({
             totalSteps: 0,
           }),
           steps: [],
-        })
+        }),
       );
-    });
-  });
-
-  describe('updateStateWithLocalStorage', () => {
-    it('should update state with localStorage data', () => {
-      const savedState: StepperState<any> = {
-        generalInfo: {
-          totalSteps: 2,
-          currentProgress: 0.5,
-          completedProgress: 0.5,
-          canAccessProgress: 1,
-        },
-        steps: [
-          { name: 'Step 1', canAccess: true, canEdit: true, isOptional: false, isCompleted: true },
-          { name: 'Step 2', canAccess: true, canEdit: true, isOptional: false, isCompleted: false },
-        ],
-        generalState: { savedData: 'test' },
-      };
-
-      const { result } = renderUseStepsActions();
-
-      act(() => {
-        result.current.updateStateWithLocalStorage(savedState);
-      });
-
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(1); // One completed step
-      expect(mockUpdateStepperState).toHaveBeenCalledWith(
-        expect.objectContaining({
-          generalInfo: expect.objectContaining({
-            totalSteps: 2,
-            currentProgress: 0.5,
-            completedProgress: 0.5,
-            canAccessProgress: 1,
-          }),
-          generalState: { savedData: 'test' },
-        })
-      );
-    });
-
-    it('should handle localStorage state with no completed steps', () => {
-      const savedState: StepperState<any> = {
-        ...mockStepperState,
-        steps: mockStepperState.steps.map(step => ({ ...step, isCompleted: false })),
-      };
-
-      const { result } = renderUseStepsActions();
-
-      act(() => {
-        result.current.updateStateWithLocalStorage(savedState);
-      });
-
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(0);
     });
   });
 
@@ -253,7 +213,7 @@ describe('useStepsActions', () => {
             testData: 'initial',
             newTestData: 'updated',
           }),
-        })
+        }),
       );
     });
 
@@ -270,7 +230,11 @@ describe('useStepsActions', () => {
       });
 
       const configWithLocalStorage = { ...mockConfig, saveLocalStorage: true };
-      const { result } = renderUseStepsActions(mockStepperState, 0, configWithLocalStorage);
+      const { result } = renderUseStepsActions(
+        mockStepperState,
+        0,
+        configWithLocalStorage,
+      );
 
       act(() => {
         result.current.updateGeneralState({ data: { test: 'data' } });
@@ -278,7 +242,7 @@ describe('useStepsActions', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'stepperState',
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -295,7 +259,7 @@ describe('useStepsActions', () => {
         expect.objectContaining({
           testData: 'initial',
           newTestData: 'updated',
-        })
+        }),
       );
     });
   });
@@ -318,7 +282,7 @@ describe('useStepsActions', () => {
             expect.objectContaining({ isCompleted: true, canAccess: true }),
             expect.objectContaining({ canEdit: false }),
           ]),
-        })
+        }),
       );
     });
 
@@ -337,9 +301,7 @@ describe('useStepsActions', () => {
 
     it('should throw error for invalid step index', () => {
       const { result } = renderUseStepsActions();
-      const updates = [
-        { stepIndex: 10, data: { isCompleted: true } },
-      ];
+      const updates = [{ stepIndex: 10, data: { isCompleted: true } }];
 
       expect(() => {
         act(() => {
@@ -350,9 +312,7 @@ describe('useStepsActions', () => {
 
     it('should throw error for negative step index', () => {
       const { result } = renderUseStepsActions();
-      const updates = [
-        { stepIndex: -1, data: { isCompleted: true } },
-      ];
+      const updates = [{ stepIndex: -1, data: { isCompleted: true } }];
 
       expect(() => {
         act(() => {
@@ -374,15 +334,21 @@ describe('useStepsActions', () => {
       });
 
       const configWithLocalStorage = { ...mockConfig, saveLocalStorage: true };
-      const { result } = renderUseStepsActions(mockStepperState, 0, configWithLocalStorage);
+      const { result } = renderUseStepsActions(
+        mockStepperState,
+        0,
+        configWithLocalStorage,
+      );
 
       act(() => {
-        result.current.updateSteps([{ stepIndex: 0, data: { isCompleted: true } }]);
+        result.current.updateSteps([
+          { stepIndex: 0, data: { isCompleted: true } },
+        ]);
       });
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'stepperState',
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -417,7 +383,7 @@ describe('useStepsActions', () => {
             expect.objectContaining({ canAccess: false }),
             expect.objectContaining({ isOptional: true }),
           ]),
-        })
+        }),
       );
     });
   });
@@ -451,7 +417,7 @@ describe('useStepsActions', () => {
       // Check that the function passed to setConfig merges correctly
       const setConfigCall = mockSetConfig.mock.calls[0][0];
       const mergedConfig = setConfigCall(mockConfig);
-      
+
       expect(mergedConfig).toEqual({
         ...mockConfig,
         saveLocalStorage: true,

@@ -28,6 +28,7 @@ export interface StepperState<T> {
   generalInfo: GeneralInfo;
   steps: StepState[];
   generalState: T;
+  isLoadedFromLocalStorage?: boolean;
 }
 
 export interface StepperContext<T> {
@@ -56,7 +57,6 @@ export interface StepperContext<T> {
   updateConfig: (config: ValidationConfigStepper) => void;
   updateSteps: (updateSteps: UpdateStepInput[]) => StepperState<T>;
   setStepsInfo: (steps: StepConfig[]) => void;
-  updateStateWithLocalStorage: (state: StepperState<T>) => void;
   cleanLocalStorage: () => void;
 }
 
