@@ -6,4 +6,13 @@ export type {
   StepperConfig,
   StepperContext,
   StepProvider,
+  StepConfig,
+  StepState,
+  ActiveStep,
+  StepperState,
+  GeneralInfo,
+  UpdateStepInput,
+  UpdateGeneralStateInput,
+  StepStateCallback,
+  ValidationConfigStepper,
 } from './types/StepTypes';

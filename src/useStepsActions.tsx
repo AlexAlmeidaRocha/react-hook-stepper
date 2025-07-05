@@ -143,10 +143,49 @@ export const useStepsActions = <T,>({
   );
 
   const updateConfig = useCallback((newConfig: ValidationConfigStepper) => {
-    setConfig((prev) => ({
-      ...prev,
-      ...newConfig,
-    }));
+    setConfig((prev) => {
+      const newConfigCombined = { ...prev, ...newConfig };
+      
+      // Simple comparison to avoid JSON.stringify issues with circular references
+      const hasConfigChanged = () => {
+        // Compare basic properties
+        if (prev.saveLocalStorage !== newConfigCombined.saveLocalStorage) return true;
+        
+        // Compare steps array length and basic properties
+        const prevSteps = prev.steps || [];
+        const newSteps = newConfigCombined.steps || [];
+        
+        if (prevSteps.length !== newSteps.length) return true;
+        
+        // Compare step properties (excluding component which can have circular refs)
+        for (let i = 0; i < newSteps.length; i++) {
+          const prevStep = prevSteps[i];
+          const newStep = newSteps[i];
+          
+          if (!prevStep || !newStep) return true;
+          if (prevStep.name !== newStep.name) return true;
+          if (prevStep.canAccess !== newStep.canAccess) return true;
+          if (prevStep.canEdit !== newStep.canEdit) return true;
+          if (prevStep.isOptional !== newStep.isOptional) return true;
+          if (prevStep.isCompleted !== newStep.isCompleted) return true;
+        }
+        
+        // Compare validation config
+        const prevValidations = prev.validations || {};
+        const newValidations = newConfigCombined.validations || {};
+        
+        // Compare validations object - we know it has a specific structure
+        if (prevValidations.goToStep?.canAccess !== newValidations.goToStep?.canAccess) return true;
+        
+        return false;
+      };
+      
+      if (!hasConfigChanged()) {
+        return prev; // Return the same reference to prevent unnecessary re-renders
+      }
+      
+      return newConfigCombined;
+    });
   }, [setConfig]);
 
   return {

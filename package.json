@@ -1,6 +1,6 @@
 {
   "name": "react-hook-stepper",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "A simple and customizable multi-step stepper component for React using hooks.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -12,7 +12,9 @@
     "build": "tsc && rollup -c",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "prepack": "npm run build"
   },
   "keywords": [
     "steps",
