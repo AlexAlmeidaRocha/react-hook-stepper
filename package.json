@@ -1,12 +1,15 @@
 {
   "name": "react-hook-stepper",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A simple and customizable multi-step stepper component for React using hooks.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "files": [ 
+    "dist"
+  ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc",
     "test": "echo \"No test specified\" && exit 0"
   },
   "keywords": [ "steps", "stepper", "react", "multi-step", "hooks", "react-hooks"],

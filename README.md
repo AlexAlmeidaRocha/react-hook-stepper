@@ -13,17 +13,17 @@ This library provides a powerful hook called useStepper to facilitate managing s
 Install the library using npm:
 
 ```bash
-npm i react-stepper-control
+npm i react-hook-stepper
 ```
 
 Install the library using pnpm or yarn:
 
 ```bash
-pnpm i react-stepper-control
+pnpm i react-hook-stepper
 ```
 
 ```bash
-yarn add react-stepper-control
+yarn add react-hook-stepper
 ```
 
 ## Hook Returns
@@ -361,9 +361,68 @@ export const Step1 = () => {
 };
 ```
 
-### StepsWithProvider
+### StepsProvider
 
-Example of using the component, after being created on a page:
+Example of using the component directly as a provider:
+
+```bash
+import { StepsProvider, useStepper, StepConfig, ValidationConfigStepper } from "react-hook-stepper";
+
+export const CustomSteper = ({
+ steps,
+ title,
+}: {
+ steps: StepConfig[];
+ title?: string;
+ config: ValidationConfigStepper;
+}) => {
+ const { stepperState, activeStep, goToStep } = useStepper({ steps, ...config }); // Use the custom hook to manage steps, just pass the steps in main component
+
+ return (
+  <div>
+   <h1>{title}</h1>
+   <div>
+    {stepperState.steps.map((step, index) => (
+     <div key={index}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div onClick={() => goToStep(index)}>
+          {activeStep.index > index ? "✔" : index + 1}
+        </div>
+        <div>{step.name}</div>
+      </div>
+      {activeStep.index === index && (
+        <div> {steps[activeStep.index].component}</div>
+      )}
+     </div>
+    ))}
+   </div>
+  </div>
+ );
+};
+
+const HomePage = () => {
+ return (
+  <StepsProvider initialConfig={{
+    // your config
+  }}>
+   <CustomSteper
+    steps={[
+     { name: "Step 1", component: <Step1 /> },
+     { name: "Step 2", component: <Step2 /> },
+     { name: "Step 3", component: <Step3 /> },
+     { name: "Step 4", component: <Step4 />, isOptional: true },
+    ]}
+   />
+  </StepsProvider>
+ );
+};
+
+export default HomePage; // Using StepsProvider directly as a wrapper component
+```
+
+### StepsWithProvider (HOC Pattern)
+
+Example of using the HOC (Higher-Order Component) pattern:
 
 ```bash
 import { StepsWithProvider, useStepper, StepConfig, ValidationConfigStepper } from "react-hook-stepper";
@@ -418,6 +477,6 @@ const HomePage = () => {
  );
 };
 
-export default StepsWithProvider(HomePage); // remember to use `StepsWithProvider` to provide the context for the entire flow
+export default StepsWithProvider(HomePage); // Using StepsWithProvider HOC pattern
 
 ```

@@ -64,26 +64,25 @@ export const useStepper = <T,>(config?: StepperConfig) => {
   } = context;
 
   useEffect(() => {
-    let initialized = false;
+    if (!config) return;
 
-    if (!initialized && config) {
-      updateConfig(config || {});
+    updateConfig(config);
 
-      if (config.steps) setStepsInfo(config.steps);
-
-      if (config?.saveLocalStorage) {
-        const localStorageitem = localStorage.getItem('stepperState');
-        const stepsSavedLocalStorage: StepperState<T> | null = localStorageitem
-          ? JSON.parse(localStorageitem)
-          : null;
-
-        if (stepsSavedLocalStorage) {
-          updateStateWithLocalStorage(stepsSavedLocalStorage);
-        }
-      }
-      initialized = true;
+    if (config.steps) {
+      setStepsInfo(config.steps);
     }
-  }, []);
+
+    if (config.saveLocalStorage) {
+      const localStorageitem = localStorage.getItem('stepperState');
+      const stepsSavedLocalStorage: StepperState<T> | null = localStorageitem
+        ? JSON.parse(localStorageitem)
+        : null;
+
+      if (stepsSavedLocalStorage) {
+        updateStateWithLocalStorage(stepsSavedLocalStorage);
+      }
+    }
+  }, [config, updateConfig, setStepsInfo, updateStateWithLocalStorage]);
 
   return stepContext;
 };

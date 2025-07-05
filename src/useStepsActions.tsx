@@ -17,6 +17,12 @@ export const useStepsActions = <T,>({
   setConfig,
   config,
 }: UseStepsActionsProps<T>) => {
+  const saveToLocalStorage = useCallback((state: StepperState<T>) => {
+    if (config.saveLocalStorage) {
+      localStorage.setItem('stepperState', JSON.stringify(state));
+    }
+  }, [config.saveLocalStorage]);
+
   const setStepsInfo = useCallback((steps: StepConfig[]) => {
     const newState = {
       ...stepperState,
@@ -35,7 +41,7 @@ export const useStepsActions = <T,>({
       })),
     };
     updateStepperState(newState);
-  }, []);
+  }, [stepperState, updateStepperState]);
 
   const updateStateWithLocalStorage = useCallback(
     (stepperState: StepperState<T>) => {
@@ -56,13 +62,12 @@ export const useStepsActions = <T,>({
         })),
         generalState: stepperState.generalState,
       };
-      setCurrentStep(
-        stepperState.steps.filter((step) => step.isCompleted === true).length ||
-          0,
-      );
+      
+      const completedSteps = stepperState.steps.filter((step) => step.isCompleted === true).length;
+      setCurrentStep(completedSteps);
       updateStepperState(newState);
     },
-    [],
+    [setCurrentStep, updateStepperState],
   );
 
   const cleanLocalStorage = useCallback(() => {
@@ -81,15 +86,13 @@ export const useStepsActions = <T,>({
           ...data,
         },
       };
+      
       updateStepperState(newState);
-
-      if (config.saveLocalStorage) {
-        localStorage.setItem('stepperState', JSON.stringify(newState));
-      }
+      saveToLocalStorage(newState);
 
       return newState;
     },
-    [currentStep, stepperState],
+    [currentStep, stepperState, updateStepperState, saveToLocalStorage],
   );
 
   const updateSteps = useCallback(
@@ -101,7 +104,8 @@ export const useStepsActions = <T,>({
         'isCompleted',
       ];
 
-      updates.forEach(({ data }) => {
+      // Validate all updates before applying any
+      updates.forEach(({ data, stepIndex }) => {
         const isValidData = Object.keys(data).every((key) =>
           validKeys.includes(key as keyof StepState),
         );
@@ -111,13 +115,15 @@ export const useStepsActions = <T,>({
             `Invalid data provided: ${JSON.stringify(data)}. Valid keys are: ${validKeys.join(', ')}`,
           );
         }
-      });
 
-      const updatedSteps = [...stepperState.steps];
-      updates.forEach(({ stepIndex, data }) => {
-        if (stepIndex < 0 || stepIndex >= updatedSteps.length) {
+        if (stepIndex < 0 || stepIndex >= stepperState.steps.length) {
           throw new Error(`Invalid stepIndex: ${stepIndex}.`);
         }
+      });
+
+      // Apply all updates
+      const updatedSteps = [...stepperState.steps];
+      updates.forEach(({ stepIndex, data }) => {
         updatedSteps[stepIndex] = {
           ...updatedSteps[stepIndex],
           ...data,
@@ -128,71 +134,21 @@ export const useStepsActions = <T,>({
         ...stepperState,
         steps: updatedSteps,
       };
+      
       updateStepperState(newState);
-
-      if (config.saveLocalStorage) {
-        localStorage.setItem('stepperState', JSON.stringify(newState));
-      }
+      saveToLocalStorage(newState);
 
       return newState;
     },
-    [currentStep, stepperState],
+    [stepperState, updateStepperState, saveToLocalStorage],
   );
 
-  // const addError = useCallback(
-  //   (stepIndex: number, message: string) => {
-  //     if (
-  //       stepperState.errors?.find(
-  //         (error) => error.step === stepIndex && error.message === message,
-  //       )
-  //     ) {
-  //       return;
-  //     }
-  //     const newState = {
-  //       ...stepperState,
-  //       errors: [
-  //         ...(stepperState.errors || []),
-  //         {
-  //           step: stepIndex,
-  //           message,
-  //         },
-  //       ],
-  //     };
-
-  //     if (config.saveLocalStorage) {
-  //       localStorage.setItem('stepperState', JSON.stringify(newState));
-  //     }
-
-  //     updateStepperState(newState);
-  //   },
-  //   [currentStep, stepperState],
-  // );
-
-  // const removeError = useCallback(
-  //   (stepIndex: number) => {
-  //     updateStepperState((prevState) => {
-  //       const newState = {
-  //         ...prevState,
-  //         errors:
-  //           prevState.errors?.filter((error) => error.step !== stepIndex),
-  //       };
-
-  //       if (config.saveLocalStorage) {
-  //         localStorage.setItem('stepperState', JSON.stringify(newState));
-  //       }
-
-  //       return newState; // Retornando o novo estado para ser aplicado corretamente
-  //     });
-  //   },
-  //   [currentStep, stepperState],
-  // );
-
-  const updateConfig = useCallback((config: ValidationConfigStepper) => {
+  const updateConfig = useCallback((newConfig: ValidationConfigStepper) => {
     setConfig((prev) => ({
       ...prev,
-      ...config,
+      ...newConfig,
     }));
-  }, []);
+  }, [setConfig]);
 
   return {
     setStepsInfo,
