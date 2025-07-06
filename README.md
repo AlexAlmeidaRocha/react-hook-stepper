@@ -1019,7 +1019,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://choosealicense.com/licenses/mit/) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -1029,4 +1029,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [Alex Almeida Rocha](https://github.com/alexalmeidarocha)
+Made with ❤️ by:
+
+[![GitHub](https://img.shields.io/badge/GitHub-@alexalmeidarocha-181717?logo=github&style=for-the-badge)](https://github.com/alexalmeidarocha)  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin&style=for-the-badge)](https://www.linkedin.com/in/alex-almeida-rocha-24049a213/)
