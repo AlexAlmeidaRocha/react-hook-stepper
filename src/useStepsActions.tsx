@@ -1,29 +1,28 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
+
 import {
+  StepConfig,
   StepperState,
+  StepState,
   UpdateGeneralStateInput,
   UpdateStepInput,
-  StepConfig,
-  StepState,
   UseStepsActionsProps,
-  ValidationConfigStepper,
-} from './types/StepTypes';
+  ValidationConfigStepper
+} from "./types/StepTypes";
 
 export const useStepsActions = <T,>({
   updateStepperState,
   stepperState,
-  currentStep,
-  setCurrentStep,
   setConfig,
-  config,
+  config
 }: UseStepsActionsProps<T>) => {
   const saveToLocalStorage = useCallback(
     (state: StepperState<T>) => {
       if (config.saveLocalStorage) {
-        localStorage.setItem('stepperState', JSON.stringify(state));
+        localStorage.setItem("stepperState", JSON.stringify(state));
       }
     },
-    [config.saveLocalStorage],
+    [config.saveLocalStorage]
   );
 
   const setStepsInfo = useCallback(
@@ -34,35 +33,32 @@ export const useStepsActions = <T,>({
           totalSteps: steps.length,
           currentProgress: 0,
           completedProgress: 0,
-          canAccessProgress: 0,
+          canAccessProgress: 0
         },
-        steps: steps.map((step: StepConfig, index: number) => ({
+        steps: steps.map((step: StepConfig) => ({
           name: step.name,
           canAccess: step.canAccess !== undefined ? step.canAccess : true, // Default to true to allow navigation
           canEdit: step.canEdit !== undefined ? step.canEdit : true,
           isOptional: step.isOptional || false,
-          isCompleted: step.isCompleted || false,
-        })),
+          isCompleted: step.isCompleted || false
+        }))
       }));
     },
-    [updateStepperState],
+    [updateStepperState]
   );
 
   const cleanLocalStorage = useCallback(() => {
-    localStorage.removeItem('stepperState');
+    localStorage.removeItem("stepperState");
   }, []);
 
   const updateGeneralState = useCallback(
-    ({
-      stepIndex = currentStep,
-      data,
-    }: UpdateGeneralStateInput<T>): StepperState<T> => {
+    ({ data }: UpdateGeneralStateInput<T>): StepperState<T> => {
       const newState: StepperState<T> = {
         ...stepperState,
         generalState: {
           ...stepperState.generalState,
-          ...data,
-        },
+          ...data
+        }
       };
 
       updateStepperState(newState);
@@ -70,27 +66,27 @@ export const useStepsActions = <T,>({
 
       return newState;
     },
-    [currentStep, stepperState, updateStepperState, saveToLocalStorage],
+    [stepperState, updateStepperState, saveToLocalStorage]
   );
 
   const updateSteps = useCallback(
     (updates: UpdateStepInput[]): StepperState<T> => {
       const validKeys: (keyof StepState)[] = [
-        'canAccess',
-        'canEdit',
-        'isOptional',
-        'isCompleted',
+        "canAccess",
+        "canEdit",
+        "isOptional",
+        "isCompleted"
       ];
 
       // Validate all updates before applying any
       updates.forEach(({ data, stepIndex }) => {
         const isValidData = Object.keys(data).every((key) =>
-          validKeys.includes(key as keyof StepState),
+          validKeys.includes(key as keyof StepState)
         );
 
         if (!isValidData) {
           throw new Error(
-            `Invalid data provided: ${JSON.stringify(data)}. Valid keys are: ${validKeys.join(', ')}`,
+            `Invalid data provided: ${JSON.stringify(data)}. Valid keys are: ${validKeys.join(", ")}`
           );
         }
 
@@ -104,13 +100,13 @@ export const useStepsActions = <T,>({
       updates.forEach(({ stepIndex, data }) => {
         updatedSteps[stepIndex] = {
           ...updatedSteps[stepIndex],
-          ...data,
+          ...data
         };
       });
 
       const newState = {
         ...stepperState,
-        steps: updatedSteps,
+        steps: updatedSteps
       };
 
       updateStepperState(newState);
@@ -118,7 +114,7 @@ export const useStepsActions = <T,>({
 
       return newState;
     },
-    [stepperState, updateStepperState, saveToLocalStorage],
+    [stepperState, updateStepperState, saveToLocalStorage]
   );
 
   const updateConfig = useCallback(
@@ -172,7 +168,7 @@ export const useStepsActions = <T,>({
         return newConfigCombined;
       });
     },
-    [setConfig],
+    [setConfig]
   );
 
   return {
@@ -180,6 +176,6 @@ export const useStepsActions = <T,>({
     updateGeneralState,
     updateSteps,
     updateConfig,
-    cleanLocalStorage,
+    cleanLocalStorage
   };
 };

@@ -49,7 +49,7 @@ export interface StepperContext<T> {
       onCompleteStep?: StepStateCallback<T>;
       updateStepsStatus?: UpdateStepInput[];
       updateGeneralStates?: UpdateGeneralStateInput<T>;
-    },
+    }
   ) => void;
   loading: boolean;
   stepperState: StepperState<T>;
@@ -79,15 +79,18 @@ export interface UseStepsActionsProps<T> {
 }
 
 export type StepStateCallback<T> = (
-  state: StepperState<T>,
+  state: StepperState<T>
 ) => Promise<void> | void;
+
 export type StepStateCallback2<T> = (formData: T) => Promise<void> | void;
+
 export type UpdateStepInput = {
   stepIndex: number;
   data: Partial<
-    Pick<StepState, 'canAccess' | 'canEdit' | 'isOptional' | 'isCompleted'>
+    Pick<StepState, "canAccess" | "canEdit" | "isOptional" | "isCompleted">
   >;
 };
+
 export type UpdateGeneralStateInput<T> = {
   stepIndex?: number;
   data: Partial<T>;
@@ -104,16 +107,16 @@ export interface ValidationConfigStepper {
     };
   };
   next?: {
-    currentStep?: Partial<Omit<StepState, 'name'>>;
-    nextStep?: Partial<Omit<StepState, 'name'>>;
+    currentStep?: Partial<Omit<StepState, "name">>;
+    nextStep?: Partial<Omit<StepState, "name">>;
   };
   prev?: {
-    currentStep?: Partial<Omit<StepState, 'name'>>;
-    prevStep?: Partial<Omit<StepState, 'name'>>;
+    currentStep?: Partial<Omit<StepState, "name">>;
+    prevStep?: Partial<Omit<StepState, "name">>;
   };
   goToStep?: {
-    currentStep?: Partial<Omit<StepState, 'name'>>;
-    nextStep?: Partial<Omit<StepState, 'name'>>;
+    currentStep?: Partial<Omit<StepState, "name">>;
+    nextStep?: Partial<Omit<StepState, "name">>;
   };
   saveLocalStorage?: boolean;
 }

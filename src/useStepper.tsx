@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef } from 'react';
-import { StepperConfig, StepperContext, StepperState } from './types/StepTypes';
-import { StepsContext } from './StepsContext';
+import { useContext, useEffect, useRef } from "react";
+
+import { StepsContext } from "./StepsContext";
+import { StepperConfig, StepperContext } from "./types/StepTypes";
 
 /**
  * Custom hook to access the steps context (StepsContext).
@@ -51,9 +52,10 @@ import { StepsContext } from './StepsContext';
  */
 
 export const useStepper = <T,>(config?: StepperConfig) => {
-  const context: StepperContext<T> | null = useContext(StepsContext);
+  const context = useContext(StepsContext) as StepperContext<T> | null;
+
   if (!context) {
-    throw new Error('useStepper must be used within a StepProvider');
+    throw new Error("useStepper must be used within a StepProvider");
   }
 
   const { updateConfig, setStepsInfo, ...stepContext } = context;

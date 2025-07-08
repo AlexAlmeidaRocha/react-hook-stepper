@@ -1,6 +1,7 @@
-import React from 'react';
-import { StepsProvider } from './StepsContext';
-import { StepProvider } from './types/StepTypes';
+import React from "react";
+
+import { StepsProvider } from "./StepsContext";
+import { StepProvider } from "./types/StepTypes";
 
 /**
  * HOC (Higher-Order Component) to wrap a component with the StepsProvider.
@@ -10,9 +11,9 @@ import { StepProvider } from './types/StepTypes';
  */
 
 export const StepsWithProvider = <P extends object>(
-  Component: React.ComponentType<P>,
+  Component: React.ComponentType<P>
 ) => {
-  return function WrapperComponent(props: P & Partial<StepProvider<any>>) {
+  return function WrapperComponent(props: P & Partial<StepProvider<unknown>>) {
     const { initialConfig, ...rest } = props;
 
     return (

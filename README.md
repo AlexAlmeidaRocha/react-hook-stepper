@@ -1,8 +1,11 @@
 # React Hook Stepper
 
-A powerful, flexible, and type-safe React hook for managing multi-step workflows with ease.
+A powerful, flexible, and type-safe React hook for managing multi-step workflows
+with ease.
 
 [![npm version](https://badge.fury.io/js/react-hook-stepper.svg)](https://badge.fury.io/js/react-hook-stepper)
+[![npm downloads](https://img.shields.io/npm/dm/react-hooks-localstorage)](https://www.npmjs.com/package/react-hook-stepper)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## ✨ Features
@@ -30,13 +33,14 @@ pnpm add react-hook-stepper
 yarn add react-hook-stepper
 ```
 
-> **Note**: TypeScript types are included! No need to install `@types/react-hook-stepper` separately.
+> **Note**: TypeScript types are included! No need to install
+> `@types/react-hook-stepper` separately.
 
 ### Basic Usage
 
 ```tsx
-import React from 'react';
-import { StepsProvider, useStepper } from 'react-hook-stepper';
+import React from "react";
+import { StepsProvider, useStepper } from "react-hook-stepper";
 
 // Step Components
 const Step1 = () => {
@@ -80,9 +84,9 @@ const Step3 = () => {
 // Main Component
 const StepperApp = () => {
   const steps = [
-    { name: 'Welcome', component: <Step1 /> },
-    { name: 'Configuration', component: <Step2 /> },
-    { name: 'Confirmation', component: <Step3 /> },
+    { name: "Welcome", component: <Step1 /> },
+    { name: "Configuration", component: <Step2 /> },
+    { name: "Confirmation", component: <Step3 /> }
   ];
 
   const { stepperState, activeStep, goToStep } = useStepper({ steps });
@@ -96,7 +100,7 @@ const StepperApp = () => {
             key={index}
             onClick={() => goToStep(index)}
             disabled={!step.canAccess}
-            className={activeStep.index === index ? 'active' : ''}
+            className={activeStep.index === index ? "active" : ""}
           >
             {step.name}
           </button>
@@ -127,7 +131,8 @@ The `useStepper` hook returns an object with the following properties:
 
 #### `stepperState`
 
-The complete state of the stepper including steps configuration and general information.
+The complete state of the stepper including steps configuration and general
+information.
 
 ```tsx
 interface StepperState<T> {
@@ -178,16 +183,16 @@ onNext();
 // With custom logic
 onNext({
   updateStepsStatus: [
-    { stepIndex: 2, data: { canAccess: true, canEdit: true } },
+    { stepIndex: 2, data: { canAccess: true, canEdit: true } }
   ],
   updateGeneralStates: {
-    data: { userData: { name: 'John', email: 'john@example.com' } },
+    data: { userData: { name: "John", email: "john@example.com" } }
   },
   onCompleteStep: async (state) => {
     // Custom async logic
     await saveUserData(state.generalState);
-    console.log('Step completed!');
-  },
+    console.log("Step completed!");
+  }
 });
 ```
 
@@ -199,7 +204,7 @@ Moves to the previous step with the same options as `onNext`.
 const { onPrev } = useStepper();
 
 onPrev({
-  updateStepsStatus: [{ stepIndex: 0, data: { canEdit: true } }],
+  updateStepsStatus: [{ stepIndex: 0, data: { canEdit: true } }]
 });
 ```
 
@@ -213,8 +218,8 @@ const { goToStep } = useStepper();
 // Jump to step 3
 goToStep(2, {
   onCompleteStep: (state) => {
-    console.log('Navigated to step 3');
-  },
+    console.log("Navigated to step 3");
+  }
 });
 ```
 
@@ -229,9 +234,9 @@ const { updateGeneralState } = useStepper<UserData>();
 
 const updatedState = updateGeneralState({
   data: {
-    user: { name: 'Jane', age: 25 },
-    preferences: { theme: 'dark' },
-  },
+    user: { name: "Jane", age: 25 },
+    preferences: { theme: "dark" }
+  }
 });
 ```
 
@@ -244,7 +249,7 @@ const { updateSteps } = useStepper();
 
 updateSteps([
   { stepIndex: 1, data: { canAccess: true, isCompleted: true } },
-  { stepIndex: 2, data: { canEdit: false } },
+  { stepIndex: 2, data: { canEdit: false } }
 ]);
 ```
 
@@ -277,7 +282,7 @@ interface FormData {
     age: number;
   };
   preferences: {
-    theme: 'light' | 'dark';
+    theme: "light" | "dark";
     notifications: boolean;
   };
   confirmation: {
@@ -290,11 +295,11 @@ interface FormData {
 const PersonalInfoStep = () => {
   const { onNext, stepperState } = useStepper<FormData>();
 
-  const handleNext = (formData: FormData['personalInfo']) => {
+  const handleNext = (formData: FormData["personalInfo"]) => {
     onNext({
       updateGeneralStates: {
-        data: { personalInfo: formData },
-      },
+        data: { personalInfo: formData }
+      }
     });
   };
 
@@ -345,46 +350,46 @@ Control step behavior with detailed validation options:
 ```tsx
 const config = {
   steps: [
-    { name: 'Personal Info', component: <PersonalInfoStep /> },
-    { name: 'Preferences', component: <PreferencesStep /> },
-    { name: 'Review', component: <ReviewStep /> },
+    { name: "Personal Info", component: <PersonalInfoStep /> },
+    { name: "Preferences", component: <PreferencesStep /> },
+    { name: "Review", component: <ReviewStep /> }
   ],
   // Navigation behavior configuration
   next: {
     currentStep: {
       canAccess: true,
       canEdit: true,
-      isCompleted: true,
+      isCompleted: true
     },
     nextStep: {
       canAccess: true,
-      canEdit: false,
-    },
+      canEdit: false
+    }
   },
   prev: {
     currentStep: {
       canEdit: true,
-      isCompleted: false,
+      isCompleted: false
     },
     prevStep: {
       canAccess: true,
-      canEdit: true,
-    },
+      canEdit: true
+    }
   },
   goToStep: {
     currentStep: {
-      isCompleted: true,
+      isCompleted: true
     },
     nextStep: {
-      canAccess: true,
-    },
+      canAccess: true
+    }
   },
   validations: {
     goToStep: {
-      canAccess: true, // Only allow navigation to accessible steps
-    },
+      canAccess: true // Only allow navigation to accessible steps
+    }
   },
-  saveLocalStorage: true, // Enable persistence
+  saveLocalStorage: true // Enable persistence
 };
 
 const { stepperState } = useStepper(config);
@@ -410,7 +415,7 @@ The library automatically handles state persistence:
 const StepperWithPersistence = () => {
   const { stepperState, cleanLocalStorage } = useStepper({
     steps: mySteps,
-    saveLocalStorage: true, // Enable persistence
+    saveLocalStorage: true // Enable persistence
   });
 
   // Data is automatically saved and restored
@@ -429,7 +434,8 @@ const StepperWithPersistence = () => {
 };
 ```
 
-**Note:** localStorage is automatically cleared when the user completes the final step.
+**Note:** localStorage is automatically cleared when the user completes the
+final step.
 
 ## 🔧 Usage Patterns
 
@@ -438,14 +444,14 @@ const StepperWithPersistence = () => {
 The provider pattern gives you full control over the stepper configuration:
 
 ```tsx
-import { StepsProvider, useStepper } from 'react-hook-stepper';
+import { StepsProvider, useStepper } from "react-hook-stepper";
 
 const MultiStepForm = () => {
   const steps = [
-    { name: 'Personal Info', component: <PersonalInfoStep /> },
-    { name: 'Address', component: <AddressStep /> },
-    { name: 'Payment', component: <PaymentStep /> },
-    { name: 'Review', component: <ReviewStep /> },
+    { name: "Personal Info", component: <PersonalInfoStep /> },
+    { name: "Address", component: <AddressStep /> },
+    { name: "Payment", component: <PaymentStep /> },
+    { name: "Review", component: <ReviewStep /> }
   ];
 
   const { stepperState, activeStep, goToStep } = useStepper({ steps });
@@ -467,7 +473,7 @@ const MultiStepForm = () => {
             key={index}
             onClick={() => goToStep(index)}
             disabled={!step.canAccess}
-            className={`step-tab ${activeStep.index === index ? 'active' : ''} ${step.isCompleted ? 'completed' : ''}`}
+            className={`step-tab ${activeStep.index === index ? "active" : ""} ${step.isCompleted ? "completed" : ""}`}
           >
             <span className="step-number">{index + 1}</span>
             <span className="step-name">{step.name}</span>
@@ -493,13 +499,13 @@ const App = () => (
 For simpler integration, use the Higher-Order Component pattern:
 
 ```tsx
-import { StepsWithProvider, useStepper } from 'react-hook-stepper';
+import { StepsWithProvider, useStepper } from "react-hook-stepper";
 
 const SimpleStepperApp = () => {
   const steps = [
-    { name: 'Welcome', component: <WelcomeStep /> },
-    { name: 'Setup', component: <SetupStep /> },
-    { name: 'Complete', component: <CompleteStep /> },
+    { name: "Welcome", component: <WelcomeStep /> },
+    { name: "Setup", component: <SetupStep /> },
+    { name: "Complete", component: <CompleteStep /> }
   ];
 
   const { stepperState, activeStep } = useStepper({ steps });
@@ -521,8 +527,8 @@ export default StepsWithProvider(SimpleStepperApp);
 ### Real-World Example: User Registration Flow
 
 ```tsx
-import React, { useState } from 'react';
-import { StepsProvider, useStepper } from 'react-hook-stepper';
+import React, { useState } from "react";
+import { StepsProvider, useStepper } from "react-hook-stepper";
 
 // Type definitions
 interface RegistrationData {
@@ -537,7 +543,7 @@ interface RegistrationData {
   };
   preferences: {
     newsletter: boolean;
-    theme: 'light' | 'dark';
+    theme: "light" | "dark";
   };
 }
 
@@ -545,27 +551,27 @@ interface RegistrationData {
 const PersonalInfoStep = () => {
   const { onNext, stepperState } = useStepper<RegistrationData>();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: "",
+    lastName: "",
+    email: ""
   });
 
   const handleNext = async () => {
     // Validate form
     if (!formData.firstName || !formData.lastName || !formData.email) {
-      alert('Please fill all fields');
+      alert("Please fill all fields");
       return;
     }
 
     // Move to next step with data
     onNext({
       updateGeneralStates: {
-        data: { personal: formData },
+        data: { personal: formData }
       },
       onCompleteStep: async (state) => {
-        console.log('Personal info saved:', state.generalState.personal);
+        console.log("Personal info saved:", state.generalState.personal);
         // You could save to API here
-      },
+      }
     });
   };
 
@@ -601,15 +607,15 @@ const PersonalInfoStep = () => {
 const AccountSetupStep = () => {
   const { onNext, onPrev, stepperState } = useStepper<RegistrationData>();
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    username: "",
+    password: ""
   });
 
   const handleNext = () => {
     onNext({
       updateGeneralStates: {
-        data: { account: formData },
-      },
+        data: { account: formData }
+      }
     });
   };
 
@@ -640,33 +646,33 @@ const PreferencesStep = () => {
   const { onNext, onPrev, stepperState } = useStepper<RegistrationData>();
   const [preferences, setPreferences] = useState<{
     newsletter: boolean;
-    theme: 'light' | 'dark';
+    theme: "light" | "dark";
   }>({
     newsletter: false,
-    theme: 'light',
+    theme: "light"
   });
 
   const handleComplete = async () => {
     onNext({
       updateGeneralStates: {
-        data: { preferences },
+        data: { preferences }
       },
       onCompleteStep: async (state) => {
         // Final step - save complete registration
-        console.log('Complete registration data:', state.generalState);
+        console.log("Complete registration data:", state.generalState);
 
         // API call to save user
         try {
-          await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(state.generalState),
+          await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(state.generalState)
           });
-          alert('Registration successful!');
+          alert("Registration successful!");
         } catch (error) {
-          console.error('Registration failed:', error);
+          console.error("Registration failed:", error);
         }
-      },
+      }
     });
   };
 
@@ -690,7 +696,7 @@ const PreferencesStep = () => {
           onChange={(e) =>
             setPreferences({
               ...preferences,
-              theme: e.target.value as 'light' | 'dark',
+              theme: e.target.value as "light" | "dark"
             })
           }
         >
@@ -707,14 +713,14 @@ const PreferencesStep = () => {
 // Main Registration Component
 const UserRegistration = () => {
   const steps = [
-    { name: 'Personal Info', component: <PersonalInfoStep /> },
-    { name: 'Account Setup', component: <AccountSetupStep /> },
-    { name: 'Preferences', component: <PreferencesStep /> },
+    { name: "Personal Info", component: <PersonalInfoStep /> },
+    { name: "Account Setup", component: <AccountSetupStep /> },
+    { name: "Preferences", component: <PreferencesStep /> }
   ];
 
   const { stepperState, activeStep, loading } = useStepper({
     steps,
-    saveLocalStorage: true, // Save progress
+    saveLocalStorage: true // Save progress
   });
 
   if (loading) {
@@ -750,14 +756,14 @@ Create dynamic workflows with conditional step logic:
 ```tsx
 const ConditionalStepperApp = () => {
   const { stepperState, activeStep, updateSteps } = useStepper<{
-    userType: 'basic' | 'premium';
+    userType: "basic" | "premium";
   }>();
 
-  const handleUserTypeChange = (userType: 'basic' | 'premium') => {
+  const handleUserTypeChange = (userType: "basic" | "premium") => {
     // Enable/disable steps based on user type
     updateSteps([
-      { stepIndex: 2, data: { canAccess: userType === 'premium' } },
-      { stepIndex: 3, data: { isOptional: userType === 'basic' } },
+      { stepIndex: 2, data: { canAccess: userType === "premium" } },
+      { stepIndex: 3, data: { isOptional: userType === "basic" } }
     ]);
   };
 
@@ -780,17 +786,17 @@ const AsyncValidationStep = () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // Validate with server
-        const response = await fetch('/api/validate', {
-          method: 'POST',
-          body: JSON.stringify(state.generalState),
+        const response = await fetch("/api/validate", {
+          method: "POST",
+          body: JSON.stringify(state.generalState)
         });
 
         if (!response.ok) {
-          throw new Error('Validation failed');
+          throw new Error("Validation failed");
         }
 
-        console.log('Step validated successfully');
-      },
+        console.log("Step validated successfully");
+      }
     });
   };
 
@@ -798,7 +804,7 @@ const AsyncValidationStep = () => {
     <div>
       <h2>Validation Step</h2>
       <button onClick={handleNext} disabled={loading}>
-        {loading ? 'Validating...' : 'Next'}
+        {loading ? "Validating..." : "Next"}
       </button>
     </div>
   );
@@ -819,12 +825,12 @@ const ProgressIndicator = () => {
         <div
           key={index}
           className={`step-indicator ${
-            index === activeStep.index ? 'active' : ''
-          } ${step.isCompleted ? 'completed' : ''}`}
+            index === activeStep.index ? "active" : ""
+          } ${step.isCompleted ? "completed" : ""}`}
           onClick={() => step.canAccess && goToStep(index)}
         >
           <div className="step-circle">
-            {step.isCompleted ? '✓' : index + 1}
+            {step.isCompleted ? "✓" : index + 1}
           </div>
           <div className="step-label">{step.name}</div>
         </div>
@@ -841,18 +847,18 @@ Create custom animations or transitions between steps:
 ```tsx
 const AnimatedStepper = () => {
   const { stepperState, activeStep } = useStepper();
-  const [slideDirection, setSlideDirection] = useState('right');
+  const [slideDirection, setSlideDirection] = useState("right");
 
   const steps = [
-    { name: 'Step 1', component: <Step1 /> },
-    { name: 'Step 2', component: <Step2 /> },
-    { name: 'Step 3', component: <Step3 /> },
+    { name: "Step 1", component: <Step1 /> },
+    { name: "Step 2", component: <Step2 /> },
+    { name: "Step 3", component: <Step3 /> }
   ];
 
   useEffect(() => {
     // Determine slide direction based on step changes
     const prevIndex = stepperState.steps.findIndex((s) => s.isCompleted);
-    setSlideDirection(activeStep.index > prevIndex ? 'right' : 'left');
+    setSlideDirection(activeStep.index > prevIndex ? "right" : "left");
   }, [activeStep.index]);
 
   return (
@@ -892,7 +898,7 @@ const BadStep = () => {
   const { stepperState } = useStepper();
 
   const handleClick = () => {
-    stepperState.generalState.someValue = 'new value'; // Don't do this!
+    stepperState.generalState.someValue = "new value"; // Don't do this!
   };
 
   return <button onClick={handleClick}>Bad Update</button>;
@@ -904,7 +910,7 @@ const GoodStep = () => {
 
   const handleClick = () => {
     updateGeneralState({
-      data: { someValue: 'new value' },
+      data: { someValue: "new value" }
     });
   };
 
@@ -918,14 +924,17 @@ const GoodStep = () => {
 
 #### "Cannot find module 'react-hook-stepper' or its corresponding type declarations"
 
-This library includes TypeScript declarations built-in. If you're seeing this error:
+This library includes TypeScript declarations built-in. If you're seeing this
+error:
 
-1. **Don't install `@types/react-hook-stepper`** - it doesn't exist and isn't needed
+1. **Don't install `@types/react-hook-stepper`** - it doesn't exist and isn't
+   needed
 2. **Make sure you have the latest version**:
    ```bash
    npm install react-hook-stepper@latest
    ```
-3. **Check your TypeScript configuration** - ensure `moduleResolution` is set to `"node"` in `tsconfig.json`:
+3. **Check your TypeScript configuration** - ensure `moduleResolution` is set to
+   `"node"` in `tsconfig.json`:
    ```json
    {
      "compilerOptions": {
@@ -933,11 +942,13 @@ This library includes TypeScript declarations built-in. If you're seeing this er
      }
    }
    ```
-4. **Restart your TypeScript server** in VS Code: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
+4. **Restart your TypeScript server** in VS Code: `Ctrl+Shift+P` → "TypeScript:
+   Restart TS Server"
 
 #### Generic Type Issues
 
-If you're having issues with generic types, make sure to provide the type parameter:
+If you're having issues with generic types, make sure to provide the type
+parameter:
 
 ```tsx
 // ❌ This might cause type issues
@@ -977,14 +988,15 @@ const App = () => (
 
 #### Steps re-rendering too often
 
-If you notice performance issues, make sure you're not recreating the steps array on every render:
+If you notice performance issues, make sure you're not recreating the steps
+array on every render:
 
 ```tsx
 // ❌ This creates a new array every render
 const MyComponent = () => {
   const steps = [
-    { name: 'Step 1', component: <Step1 /> },
-    { name: 'Step 2', component: <Step2 /> },
+    { name: "Step 1", component: <Step1 /> },
+    { name: "Step 2", component: <Step2 /> }
   ];
 
   const { stepperState } = useStepper({ steps });
@@ -993,8 +1005,8 @@ const MyComponent = () => {
 
 // ✅ Move steps outside or use useMemo
 const steps = [
-  { name: 'Step 1', component: <Step1 /> },
-  { name: 'Step 2', component: <Step2 /> },
+  { name: "Step 1", component: <Step1 /> },
+  { name: "Step 2", component: <Step2 /> }
 ];
 
 const MyComponent = () => {
@@ -1005,27 +1017,21 @@ const MyComponent = () => {
 
 ## 📋 Best Practices
 
-1. **Use TypeScript** - Define your step data types for better development experience
+1. **Use TypeScript** - Define your step data types for better development
+   experience
 2. **Validate Early** - Check form data before allowing navigation
 3. **Handle Loading States** - Show loading indicators during async operations
-4. **Provide Clear Navigation** - Make it obvious how users can move between steps
+4. **Provide Clear Navigation** - Make it obvious how users can move between
+   steps
 5. **Save Progress** - Use localStorage for complex multi-step forms
 6. **Error Handling** - Implement proper error boundaries and validation
-7. **Accessibility** - Ensure your stepper is keyboard navigable and screen reader friendly
-
-<!-- ## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details. -->
+7. **Accessibility** - Ensure your stepper is keyboard navigable and screen
+   reader friendly
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](https://choosealicense.com/licenses/mit/) file for details.
-
-## 🙏 Acknowledgments
-
-- React team for the amazing hooks API
-- TypeScript team for excellent type support
-- All contributors who helped make this library better
+This project is licensed under the MIT License - see the
+[LICENSE](https://choosealicense.com/licenses/mit/) file for details.
 
 ---
 

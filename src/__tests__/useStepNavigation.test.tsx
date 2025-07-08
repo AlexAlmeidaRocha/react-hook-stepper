@@ -1,41 +1,42 @@
-import React from 'react';
-import { renderHook, act } from '@testing-library/react';
-import { useStepNavigation } from '../useStepNavigation';
-import { StepperState, StepperConfig } from '../types/StepTypes';
+/* eslint-disable no-console */
+import { act, renderHook } from "@testing-library/react";
+
+import { StepperConfig, StepperState } from "../types/StepTypes";
+import { useStepNavigation } from "../useStepNavigation";
 
 // Mock data
-const mockStepperState: StepperState<any> = {
+const mockStepperState: StepperState<unknown> = {
   generalInfo: {
     totalSteps: 3,
     currentProgress: 0,
     completedProgress: 0,
-    canAccessProgress: 0.33,
+    canAccessProgress: 0.33
   },
   steps: [
     {
-      name: 'Step 1',
+      name: "Step 1",
       canAccess: true,
       canEdit: true,
       isOptional: false,
-      isCompleted: false,
+      isCompleted: false
     },
     {
-      name: 'Step 2',
+      name: "Step 2",
       canAccess: true,
       canEdit: true,
       isOptional: false,
-      isCompleted: false,
+      isCompleted: false
     },
     {
-      name: 'Step 3',
+      name: "Step 3",
       canAccess: false,
       canEdit: false,
       isOptional: false,
-      isCompleted: false,
-    },
+      isCompleted: false
+    }
   ],
   generalState: {},
-  isLoadedFromLocalStorage: false,
+  isLoadedFromLocalStorage: false
 };
 
 const mockConfig: StepperConfig = {
@@ -45,17 +46,17 @@ const mockConfig: StepperConfig = {
     currentStep: {
       canAccess: true,
       isCompleted: true,
-      canEdit: true,
+      canEdit: true
     },
     nextStep: {
       canAccess: true,
       isCompleted: false,
-      canEdit: true,
-    },
-  },
+      canEdit: true
+    }
+  }
 };
 
-describe('useStepNavigation', () => {
+describe("useStepNavigation", () => {
   let mockSetCurrentStep: jest.Mock;
   let mockUpdateStepperState: jest.Mock;
   let mockSetLoading: jest.Mock;
@@ -67,8 +68,8 @@ describe('useStepNavigation', () => {
     mockSetLoading = jest.fn();
 
     // Mock console methods
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -77,8 +78,8 @@ describe('useStepNavigation', () => {
 
   const renderUseStepNavigation = (
     currentStep: number = 0,
-    stepperState: StepperState<any> = mockStepperState,
-    config: StepperConfig = mockConfig,
+    stepperState: StepperState<unknown> = mockStepperState,
+    config: StepperConfig = mockConfig
   ) => {
     return renderHook(() =>
       useStepNavigation({
@@ -87,13 +88,13 @@ describe('useStepNavigation', () => {
         stepperState,
         updateStepperState: mockUpdateStepperState,
         setLoading: mockSetLoading,
-        config,
-      }),
+        config
+      })
     );
   };
 
-  describe('onNext', () => {
-    it('should navigate to next step', async () => {
+  describe("onNext", () => {
+    it("should navigate to next step", async () => {
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
@@ -106,7 +107,7 @@ describe('useStepNavigation', () => {
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });
 
-    it('should not navigate when already on last step', async () => {
+    it("should not navigate when already on last step", async () => {
       const { result } = renderUseStepNavigation(3); // Last step
 
       await act(async () => {
@@ -115,11 +116,11 @@ describe('useStepNavigation', () => {
 
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
       expect(console.warn).toHaveBeenCalledWith(
-        'You are already on the last step.',
+        "You are already on the last step."
       );
     });
 
-    it('should call onCompleteStep callback when provided', async () => {
+    it("should call onCompleteStep callback when provided", async () => {
       const onCompleteStep = jest.fn();
       const { result } = renderUseStepNavigation(0);
 
@@ -130,7 +131,7 @@ describe('useStepNavigation', () => {
       expect(onCompleteStep).toHaveBeenCalled();
     });
 
-    it('should update steps status when provided', async () => {
+    it("should update steps status when provided", async () => {
       const { result } = renderUseStepNavigation(0);
       const updateStepsStatus = [{ stepIndex: 0, data: { isCompleted: true } }];
 
@@ -141,15 +142,15 @@ describe('useStepNavigation', () => {
       expect(mockUpdateStepperState).toHaveBeenCalledWith(
         expect.objectContaining({
           steps: expect.arrayContaining([
-            expect.objectContaining({ isCompleted: true }),
-          ]),
-        }),
+            expect.objectContaining({ isCompleted: true })
+          ])
+        })
       );
     });
 
-    it('should update general state when provided', async () => {
+    it("should update general state when provided", async () => {
       const { result } = renderUseStepNavigation(0);
-      const updateGeneralStates = { data: { testData: 'test' } };
+      const updateGeneralStates = { data: { testData: "test" } };
 
       await act(async () => {
         await result.current.onNext({ updateGeneralStates });
@@ -157,15 +158,15 @@ describe('useStepNavigation', () => {
 
       expect(mockUpdateStepperState).toHaveBeenCalledWith(
         expect.objectContaining({
-          generalState: expect.objectContaining({ testData: 'test' }),
-        }),
+          generalState: expect.objectContaining({ testData: "test" })
+        })
       );
     });
 
-    it('should handle errors gracefully', async () => {
+    it("should handle errors gracefully", async () => {
       const onCompleteStep = jest
         .fn()
-        .mockRejectedValue(new Error('Test error'));
+        .mockRejectedValue(new Error("Test error"));
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
@@ -173,15 +174,15 @@ describe('useStepNavigation', () => {
       });
 
       expect(console.error).toHaveBeenCalledWith(
-        'Error in step navigation:',
-        expect.any(Error),
+        "Error in step navigation:",
+        expect.any(Error)
       );
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });
   });
 
-  describe('onPrev', () => {
-    it('should navigate to previous step', async () => {
+  describe("onPrev", () => {
+    it("should navigate to previous step", async () => {
       const { result } = renderUseStepNavigation(1);
 
       await act(async () => {
@@ -194,7 +195,7 @@ describe('useStepNavigation', () => {
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });
 
-    it('should not navigate when already on first step', async () => {
+    it("should not navigate when already on first step", async () => {
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
@@ -203,11 +204,11 @@ describe('useStepNavigation', () => {
 
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
       expect(console.warn).toHaveBeenCalledWith(
-        'You are already on the first step.',
+        "You are already on the first step."
       );
     });
 
-    it('should call onCompleteStep callback when provided', async () => {
+    it("should call onCompleteStep callback when provided", async () => {
       const onCompleteStep = jest.fn();
       const { result } = renderUseStepNavigation(1);
 
@@ -219,8 +220,8 @@ describe('useStepNavigation', () => {
     });
   });
 
-  describe('goToStep', () => {
-    it('should navigate to specific step', async () => {
+  describe("goToStep", () => {
+    it("should navigate to specific step", async () => {
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
@@ -233,7 +234,7 @@ describe('useStepNavigation', () => {
       expect(mockSetLoading).toHaveBeenCalledWith(false);
     });
 
-    it('should not navigate when target step is current step', async () => {
+    it("should not navigate when target step is current step", async () => {
       const { result } = renderUseStepNavigation(1);
 
       await act(async () => {
@@ -244,40 +245,40 @@ describe('useStepNavigation', () => {
       expect(mockUpdateStepperState).not.toHaveBeenCalled();
     });
 
-    it('should throw error when step does not exist', async () => {
+    it("should throw error when step does not exist", async () => {
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
         await expect(result.current.goToStep(5)).rejects.toThrow(
-          'The step 5 does not exist.',
+          "The step 5 does not exist."
         );
       });
     });
 
-    it('should throw error when step index is negative', async () => {
+    it("should throw error when step index is negative", async () => {
       const { result } = renderUseStepNavigation(0);
 
       await act(async () => {
         await expect(result.current.goToStep(-1)).rejects.toThrow(
-          'The step -1 does not exist.',
+          "The step -1 does not exist."
         );
       });
     });
 
-    it('should not navigate to inaccessible step when validation is enabled', async () => {
+    it("should not navigate to inaccessible step when validation is enabled", async () => {
       const configWithValidation = {
         ...mockConfig,
         validations: {
           goToStep: {
-            canAccess: true,
-          },
-        },
+            canAccess: true
+          }
+        }
       };
 
       const { result } = renderUseStepNavigation(
         0,
         mockStepperState,
-        configWithValidation,
+        configWithValidation
       );
 
       await act(async () => {
@@ -286,24 +287,24 @@ describe('useStepNavigation', () => {
 
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
       expect(console.warn).toHaveBeenCalledWith(
-        'The step 2 is not accessible because it is not available.',
+        "The step 2 is not accessible because it is not available."
       );
     });
 
-    it('should navigate to inaccessible step when validation is disabled', async () => {
+    it("should navigate to inaccessible step when validation is disabled", async () => {
       const configWithoutValidation = {
         ...mockConfig,
         validations: {
           goToStep: {
-            canAccess: false,
-          },
-        },
+            canAccess: false
+          }
+        }
       };
 
       const { result } = renderUseStepNavigation(
         0,
         mockStepperState,
-        configWithoutValidation,
+        configWithoutValidation
       );
 
       await act(async () => {
@@ -313,7 +314,7 @@ describe('useStepNavigation', () => {
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });
 
-    it('should call onCompleteStep callback when provided', async () => {
+    it("should call onCompleteStep callback when provided", async () => {
       const onCompleteStep = jest.fn();
       const { result } = renderUseStepNavigation(0);
 
@@ -325,28 +326,28 @@ describe('useStepNavigation', () => {
     });
   });
 
-  describe('localStorage integration', () => {
-    it('should save to localStorage when saveLocalStorage is true', async () => {
+  describe("localStorage integration", () => {
+    it("should save to localStorage when saveLocalStorage is true", async () => {
       const localStorageMock = {
         getItem: jest.fn(),
         setItem: jest.fn(),
-        removeItem: jest.fn(),
+        removeItem: jest.fn()
       };
 
-      Object.defineProperty(window, 'localStorage', {
+      Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
-        writable: true,
+        writable: true
       });
 
       const configWithLocalStorage = {
         ...mockConfig,
-        saveLocalStorage: true,
+        saveLocalStorage: true
       };
 
       const { result } = renderUseStepNavigation(
         0,
         mockStepperState,
-        configWithLocalStorage,
+        configWithLocalStorage
       );
 
       await act(async () => {
@@ -354,39 +355,39 @@ describe('useStepNavigation', () => {
       });
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'stepperState',
-        expect.any(String),
+        "stepperState",
+        expect.any(String)
       );
     });
 
-    it('must remove from localStorage when clicking next while in the last step', async () => {
+    it("must remove from localStorage when clicking next while in the last step", async () => {
       const localStorageMock = {
         getItem: jest.fn(),
         setItem: jest.fn(),
-        removeItem: jest.fn(),
+        removeItem: jest.fn()
       };
 
-      Object.defineProperty(window, 'localStorage', {
+      Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
-        writable: true,
+        writable: true
       });
 
       const configWithLocalStorage = {
         ...mockConfig,
-        saveLocalStorage: true,
+        saveLocalStorage: true
       };
 
       const { result } = renderUseStepNavigation(
         2,
         mockStepperState,
-        configWithLocalStorage,
+        configWithLocalStorage
       );
 
       await act(async () => {
         await result.current.onNext();
       });
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('stepperState');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith("stepperState");
     });
   });
 });

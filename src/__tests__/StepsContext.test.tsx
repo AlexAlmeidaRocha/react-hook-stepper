@@ -1,10 +1,13 @@
-import React from 'react';
-import { render, screen, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { StepsProvider, StepsContext } from '../StepsContext';
-import { useStepper } from '../useStepper';
-import { useContext } from 'react';
-import { StepperConfig } from '../types/StepTypes';
+import React from "react";
+import { act, render, screen } from "@testing-library/react";
+
+import "@testing-library/jest-dom";
+
+import { useContext } from "react";
+
+import { StepsContext, StepsProvider } from "../StepsContext";
+import { StepperConfig } from "../types/StepTypes";
+import { useStepper } from "../useStepper";
 
 // Mock components
 const TestComponent = () => {
@@ -42,46 +45,46 @@ const TestComponent = () => {
 };
 
 const mockSteps = [
-  { name: 'Step 1', component: <div>Step 1</div> },
-  { name: 'Step 2', component: <div>Step 2</div> },
-  { name: 'Step 3', component: <div>Step 3</div> },
+  { name: "Step 1", component: <div>Step 1</div> },
+  { name: "Step 2", component: <div>Step 2</div> },
+  { name: "Step 3", component: <div>Step 3</div> }
 ];
 
 const mockConfig: StepperConfig = {
   steps: mockSteps,
-  saveLocalStorage: false,
+  saveLocalStorage: false
 };
 
-describe('StepsContext', () => {
+describe("StepsContext", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Mock console methods
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('should provide initial context values', () => {
+  it("should provide initial context values", () => {
     render(
       <StepsProvider>
         <TestComponent />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
-    expect(screen.getByTestId('total-steps')).toHaveTextContent('0');
-    expect(screen.getByTestId('current-step')).toHaveTextContent('0');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('true');
-    expect(screen.getByTestId('is-last-step')).toHaveTextContent('false');
-    expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    expect(screen.getByTestId("total-steps")).toHaveTextContent("0");
+    expect(screen.getByTestId("current-step")).toHaveTextContent("0");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("true");
+    expect(screen.getByTestId("is-last-step")).toHaveTextContent("false");
+    expect(screen.getByTestId("loading")).toHaveTextContent("false");
   });
 
-  it('should provide context with initial config', () => {
+  it("should provide context with initial config", () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      const stepper = useStepper(mockConfig);
+      useStepper(mockConfig);
 
       if (!context) {
         return <div>No context</div>;
@@ -105,21 +108,21 @@ describe('StepsContext', () => {
     };
 
     render(
-      <StepsProvider>
+      <StepsProvider initialConfig={mockConfig}>
         <TestComponentWithStepper />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
-    expect(screen.getByTestId('total-steps')).toHaveTextContent('3');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('Step 1');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('true');
-    expect(screen.getByTestId('is-last-step')).toHaveTextContent('false');
+    expect(screen.getByTestId("total-steps")).toHaveTextContent("3");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("Step 1");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("true");
+    expect(screen.getByTestId("is-last-step")).toHaveTextContent("false");
   });
 
-  it('should handle navigation between steps', async () => {
+  it("should handle navigation between steps", async () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      const stepper = useStepper(mockConfig);
+      useStepper(mockConfig);
 
       if (!context) {
         return <div>No context</div>;
@@ -145,7 +148,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
     // Wait for initialization
@@ -154,24 +157,24 @@ describe('StepsContext', () => {
     });
 
     // Initial state
-    expect(screen.getByTestId('current-step')).toHaveTextContent('0');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('Step 1');
+    expect(screen.getByTestId("current-step")).toHaveTextContent("0");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("Step 1");
 
     // Navigate to next step
     await act(async () => {
-      screen.getByTestId('next-button').click();
+      screen.getByTestId("next-button").click();
     });
 
-    expect(screen.getByTestId('current-step')).toHaveTextContent('1');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('Step 2');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('false');
-    expect(screen.getByTestId('is-last-step')).toHaveTextContent('false');
+    expect(screen.getByTestId("current-step")).toHaveTextContent("1");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("Step 2");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("false");
+    expect(screen.getByTestId("is-last-step")).toHaveTextContent("false");
   });
 
-  it('should handle navigation to last step', async () => {
+  it("should handle navigation to last step", async () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      const stepper = useStepper(mockConfig);
+      useStepper(mockConfig);
 
       if (!context) {
         return <div>No context</div>;
@@ -203,7 +206,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
     // Wait for initialization
@@ -212,23 +215,23 @@ describe('StepsContext', () => {
     });
 
     // Check that steps are loaded
-    expect(screen.getByTestId('total-steps')).toHaveTextContent('3');
+    expect(screen.getByTestId("total-steps")).toHaveTextContent("3");
 
     // Navigate to last step
     await act(async () => {
-      screen.getByTestId('goto-button').click();
+      screen.getByTestId("goto-button").click();
     });
 
-    expect(screen.getByTestId('current-step')).toHaveTextContent('2');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('Step 3');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('false');
-    expect(screen.getByTestId('is-last-step')).toHaveTextContent('true');
+    expect(screen.getByTestId("current-step")).toHaveTextContent("2");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("Step 3");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("false");
+    expect(screen.getByTestId("is-last-step")).toHaveTextContent("true");
   });
 
-  it('should handle previous navigation', async () => {
+  it("should handle previous navigation", async () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      const stepper = useStepper(mockConfig);
+      useStepper(mockConfig);
 
       if (!context) {
         return <div>No context</div>;
@@ -254,7 +257,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
     // Wait for initialization
@@ -264,25 +267,25 @@ describe('StepsContext', () => {
 
     // Navigate to step 1 first
     await act(async () => {
-      screen.getByTestId('next-button').click();
+      screen.getByTestId("next-button").click();
     });
 
-    expect(screen.getByTestId('current-step')).toHaveTextContent('1');
+    expect(screen.getByTestId("current-step")).toHaveTextContent("1");
 
     // Navigate back to previous step
     await act(async () => {
-      screen.getByTestId('prev-button').click();
+      screen.getByTestId("prev-button").click();
     });
 
-    expect(screen.getByTestId('current-step')).toHaveTextContent('0');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('Step 1');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('true');
+    expect(screen.getByTestId("current-step")).toHaveTextContent("0");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("Step 1");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("true");
   });
 
-  it('should show loading state during navigation', async () => {
+  it("should show loading state during navigation", async () => {
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      const stepper = useStepper(mockConfig);
+      useStepper(mockConfig);
 
       if (!context) {
         return <div>No context</div>;
@@ -301,7 +304,7 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <TestComponentWithStepper />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
     // Wait for initialization
@@ -309,37 +312,37 @@ describe('StepsContext', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    expect(screen.getByTestId("loading")).toHaveTextContent("false");
 
     // Start navigation
     await act(async () => {
-      screen.getByTestId('next-button').click();
+      screen.getByTestId("next-button").click();
     });
 
     // Loading should be false after navigation completes
-    expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    expect(screen.getByTestId("loading")).toHaveTextContent("false");
   });
 
-  it('should handle empty steps array', () => {
+  it("should handle empty steps array", () => {
     const emptyConfig: StepperConfig = {
       steps: [],
-      saveLocalStorage: false,
+      saveLocalStorage: false
     };
 
     render(
       <StepsProvider initialConfig={emptyConfig}>
         <TestComponent />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
-    expect(screen.getByTestId('total-steps')).toHaveTextContent('0');
-    expect(screen.getByTestId('current-step')).toHaveTextContent('0');
-    expect(screen.getByTestId('active-step-name')).toHaveTextContent('');
-    expect(screen.getByTestId('is-first-step')).toHaveTextContent('true');
-    expect(screen.getByTestId('is-last-step')).toHaveTextContent('false');
+    expect(screen.getByTestId("total-steps")).toHaveTextContent("0");
+    expect(screen.getByTestId("current-step")).toHaveTextContent("0");
+    expect(screen.getByTestId("active-step-name")).toHaveTextContent("");
+    expect(screen.getByTestId("is-first-step")).toHaveTextContent("true");
+    expect(screen.getByTestId("is-last-step")).toHaveTextContent("false");
   });
 
-  it('should provide all required context methods', () => {
+  it("should provide all required context methods", () => {
     const MethodTestComponent = () => {
       const context = useContext(StepsContext);
 
@@ -350,30 +353,30 @@ describe('StepsContext', () => {
       return (
         <div>
           <div data-testid="has-onNext">
-            {typeof context.onNext === 'function' ? 'true' : 'false'}
+            {typeof context.onNext === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-onPrev">
-            {typeof context.onPrev === 'function' ? 'true' : 'false'}
+            {typeof context.onPrev === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-goToStep">
-            {typeof context.goToStep === 'function' ? 'true' : 'false'}
+            {typeof context.goToStep === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-updateGeneralState">
-            {typeof context.updateGeneralState === 'function'
-              ? 'true'
-              : 'false'}
+            {typeof context.updateGeneralState === "function"
+              ? "true"
+              : "false"}
           </div>
           <div data-testid="has-updateConfig">
-            {typeof context.updateConfig === 'function' ? 'true' : 'false'}
+            {typeof context.updateConfig === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-setStepsInfo">
-            {typeof context.setStepsInfo === 'function' ? 'true' : 'false'}
+            {typeof context.setStepsInfo === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-updateSteps">
-            {typeof context.updateSteps === 'function' ? 'true' : 'false'}
+            {typeof context.updateSteps === "function" ? "true" : "false"}
           </div>
           <div data-testid="has-cleanLocalStorage">
-            {typeof context.cleanLocalStorage === 'function' ? 'true' : 'false'}
+            {typeof context.cleanLocalStorage === "function" ? "true" : "false"}
           </div>
         </div>
       );
@@ -382,20 +385,20 @@ describe('StepsContext', () => {
     render(
       <StepsProvider>
         <MethodTestComponent />
-      </StepsProvider>,
+      </StepsProvider>
     );
 
-    expect(screen.getByTestId('has-onNext')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-onPrev')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-goToStep')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-updateGeneralState')).toHaveTextContent(
-      'true',
+    expect(screen.getByTestId("has-onNext")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-onPrev")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-goToStep")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-updateGeneralState")).toHaveTextContent(
+      "true"
     );
-    expect(screen.getByTestId('has-updateConfig')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-setStepsInfo')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-updateSteps')).toHaveTextContent('true');
-    expect(screen.getByTestId('has-cleanLocalStorage')).toHaveTextContent(
-      'true',
+    expect(screen.getByTestId("has-updateConfig")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-setStepsInfo")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-updateSteps")).toHaveTextContent("true");
+    expect(screen.getByTestId("has-cleanLocalStorage")).toHaveTextContent(
+      "true"
     );
   });
 });

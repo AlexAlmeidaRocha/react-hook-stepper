@@ -1,75 +1,77 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
-  StepperState,
-  StepperContext,
-  StepProvider,
   StepperConfig,
-} from './types/StepTypes';
-import { useStepsActions } from './useStepsActions';
-import { useStepNavigation } from './useStepNavigation';
+  StepperContext,
+  StepperState,
+  StepProvider
+} from "./types/StepTypes";
+import { useStepNavigation } from "./useStepNavigation";
+import { useStepsActions } from "./useStepsActions";
 
 const createInitialState = <T,>(
-  config?: StepperConfig,
+  config?: StepperConfig
 ): { state: StepperState<T>; currentStep: number } => {
   const baseState: StepperState<T> = {
     generalInfo: {
       totalSteps: 0,
       currentProgress: 0,
       completedProgress: 0,
-      canAccessProgress: 0,
+      canAccessProgress: 0
     },
     steps: [],
     generalState: {} as T,
-    isLoadedFromLocalStorage: false,
+    isLoadedFromLocalStorage: false
   };
 
   // Se saveLocalStorage está habilitado, tenta carregar do localStorage
   if (config?.saveLocalStorage) {
     try {
-      const localStorageItem = localStorage.getItem('stepperState');
+      const localStorageItem = localStorage.getItem("stepperState");
+
       if (localStorageItem) {
         const savedState: StepperState<T> = JSON.parse(localStorageItem);
 
         const completedSteps = savedState.steps.filter(
-          (step) => step.isCompleted,
+          (step) => step.isCompleted
         ).length;
 
         return {
           state: {
             ...savedState,
-            isLoadedFromLocalStorage: true,
+            isLoadedFromLocalStorage: true
           },
-          currentStep: completedSteps,
+          currentStep: completedSteps
         };
       }
     } catch (error) {
-      console.error('Error loading from localStorage:', error);
+      // eslint-disable-next-line no-console
+      console.error("Error loading from localStorage:", error);
     }
   }
 
   return {
     state: baseState,
-    currentStep: 0,
+    currentStep: 0
   };
 };
 
 const defaultConfig: StepperConfig = {
   steps: [],
-  saveLocalStorage: true,
+  saveLocalStorage: true
 };
 
-export const StepsContext = React.createContext<StepperContext<any> | null>(
-  null,
+export const StepsContext = React.createContext<StepperContext<unknown> | null>(
+  null
 );
 
 export const StepsProvider = <T,>({
   children,
-  initialConfig = defaultConfig,
+  initialConfig = defaultConfig
 }: StepProvider<T>) => {
-  // Carrega o estado inicial do localStorage se disponível
   const initialStateData = useMemo(
     () => createInitialState<T>(initialConfig),
-    [initialConfig],
+    [initialConfig]
   );
 
   const [currentStep, setCurrentStep] = useState(initialStateData.currentStep);
@@ -82,14 +84,14 @@ export const StepsProvider = <T,>({
     updateSteps,
     updateGeneralState,
     updateConfig,
-    cleanLocalStorage,
+    cleanLocalStorage
   } = useStepsActions<T>({
     updateStepperState,
     stepperState,
     currentStep,
     setCurrentStep,
     config,
-    setConfig,
+    setConfig
   });
 
   const { onNext, onPrev, goToStep } = useStepNavigation<T>({
@@ -98,16 +100,23 @@ export const StepsProvider = <T,>({
     stepperState,
     updateStepperState,
     setLoading,
-    config,
+    config
   });
 
   const currentActiveStep = stepperState.steps[currentStep] || {
-    name: '',
+    name: "",
     canAccess: false,
     canEdit: false,
     isOptional: false,
-    isCompleted: false,
+    isCompleted: false
   };
+
+  // Inicializa steps automaticamente a partir do initialConfig
+  useEffect(() => {
+    if (initialConfig.steps && initialConfig.steps.length > 0) {
+      setStepsInfo(initialConfig.steps);
+    }
+  }, [initialConfig.steps, setStepsInfo]);
 
   return (
     <StepsContext.Provider
@@ -116,7 +125,7 @@ export const StepsProvider = <T,>({
           ...currentActiveStep,
           index: currentStep,
           isLastStep: currentStep === stepperState.generalInfo.totalSteps - 1,
-          isFirstStep: currentStep === 0,
+          isFirstStep: currentStep === 0
         },
         onNext,
         onPrev,
@@ -127,7 +136,7 @@ export const StepsProvider = <T,>({
         updateConfig,
         setStepsInfo,
         updateSteps,
-        cleanLocalStorage,
+        cleanLocalStorage
       }}
     >
       {children}

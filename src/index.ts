@@ -1,6 +1,8 @@
-export { useStepper } from './useStepper';
-export { StepsProvider } from './StepsContext';
-export { StepsWithProvider } from './StepsWithProvider';
+export { useStepper } from "./useStepper";
+
+export { StepsProvider } from "./StepsContext";
+
+export { StepsWithProvider } from "./StepsWithProvider";
 
 export type {
   StepperConfig,
@@ -14,5 +16,5 @@ export type {
   UpdateStepInput,
   UpdateGeneralStateInput,
   StepStateCallback,
-  ValidationConfigStepper,
-} from './types/StepTypes';
+  ValidationConfigStepper
+} from "./types/StepTypes";

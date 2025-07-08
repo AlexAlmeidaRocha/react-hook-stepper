@@ -1,11 +1,13 @@
-import { useCallback, useMemo } from 'react';
+/* eslint-disable no-console */
+import { useCallback, useMemo } from "react";
+
 import {
-  StepStateCallback,
-  UpdateStepInput,
-  UpdateGeneralStateInput,
-  UseStepNavigationProps,
   StepperState,
-} from './types/StepTypes';
+  StepStateCallback,
+  UpdateGeneralStateInput,
+  UpdateStepInput,
+  UseStepNavigationProps
+} from "./types/StepTypes";
 
 export const useStepNavigation = <T,>({
   currentStep,
@@ -13,17 +15,20 @@ export const useStepNavigation = <T,>({
   stepperState,
   updateStepperState,
   setLoading,
-  config,
+  config
 }: UseStepNavigationProps<T>) => {
   // Helper functions to reduce code duplication
   const calculateProgress = useMemo(() => {
-    return (steps: any[], totalSteps: number) => ({
+    return (
+      steps: { isCompleted?: boolean; canAccess?: boolean }[],
+      totalSteps: number
+    ) => ({
       completedProgress:
         steps.filter((item) => item.isCompleted === true).length /
         (totalSteps || 1),
       canAccessProgress:
         steps.filter((item) => item.canAccess === true).length /
-        (totalSteps || 1),
+        (totalSteps || 1)
     });
   }, []);
 
@@ -33,16 +38,21 @@ export const useStepNavigation = <T,>({
       updates.forEach((updateStep) => {
         updatedSteps[updateStep.stepIndex] = {
           ...currentState.steps[updateStep.stepIndex],
-          ...updateStep.data,
+          ...updateStep.data
         };
       });
+
       return updatedSteps;
     },
-    [],
+    []
   );
 
   const updateStepStates = useCallback(
-    (steps: any[], currentStepIndex: number, targetStepIndex?: number) => {
+    (
+      steps: StepperState<T>["steps"],
+      currentStepIndex: number,
+      targetStepIndex?: number
+    ) => {
       return steps.map((step, index) => {
         const isCurrentStep = index === currentStepIndex;
         const isTargetStep =
@@ -55,7 +65,7 @@ export const useStepNavigation = <T,>({
             isCompleted:
               config.next?.currentStep?.isCompleted ?? step.isCompleted,
             isOptional: config.next?.currentStep?.isOptional ?? step.isOptional,
-            canEdit: config.next?.currentStep?.canEdit ?? step.canEdit,
+            canEdit: config.next?.currentStep?.canEdit ?? step.canEdit
           };
         }
 
@@ -65,14 +75,14 @@ export const useStepNavigation = <T,>({
             canAccess: config.next?.nextStep?.canAccess ?? step.canAccess,
             isCompleted: config.next?.nextStep?.isCompleted ?? step.isCompleted,
             isOptional: config.next?.nextStep?.isOptional ?? step.isOptional,
-            canEdit: config.next?.nextStep?.canEdit ?? step.canEdit,
+            canEdit: config.next?.nextStep?.canEdit ?? step.canEdit
           };
         }
 
         return step;
       });
     },
-    [config],
+    [config]
   );
 
   const saveToLocalStorage = useCallback(
@@ -80,13 +90,13 @@ export const useStepNavigation = <T,>({
       if (config.saveLocalStorage) {
         // Remove from localStorage if it's the last step
         if (targetStep === state.generalInfo.totalSteps) {
-          localStorage.removeItem('stepperState');
+          localStorage.removeItem("stepperState");
         } else {
-          localStorage.setItem('stepperState', JSON.stringify(state));
+          localStorage.setItem("stepperState", JSON.stringify(state));
         }
       }
     },
-    [config.saveLocalStorage],
+    [config.saveLocalStorage]
   );
 
   const executeStepNavigation = useCallback(
@@ -96,12 +106,12 @@ export const useStepNavigation = <T,>({
         onCompleteStep?: StepStateCallback<T>;
         updateStepsStatus?: UpdateStepInput[];
         updateGeneralStates?: UpdateGeneralStateInput<T>;
-      },
+      }
     ) => {
       const {
         onCompleteStep,
         updateStepsStatus: statusUpdates,
-        updateGeneralStates,
+        updateGeneralStates
       } = args || {};
 
       setLoading(true);
@@ -116,13 +126,13 @@ export const useStepNavigation = <T,>({
         const finalSteps = updateStepStates(
           updatedSteps,
           currentStep,
-          targetStep,
+          targetStep
         );
 
         // Calculate progress
         const progress = calculateProgress(
           finalSteps,
-          currentState.generalInfo.totalSteps,
+          currentState.generalInfo.totalSteps
         );
 
         // Create new state
@@ -133,12 +143,12 @@ export const useStepNavigation = <T,>({
             ...currentState.generalInfo,
             currentProgress:
               targetStep / (currentState.generalInfo.totalSteps || 1),
-            ...progress,
+            ...progress
           },
           generalState: {
             ...currentState.generalState,
-            ...(updateGeneralStates?.data || {}),
-          },
+            ...(updateGeneralStates?.data || {})
+          }
         };
 
         // Save to localStorage
@@ -152,7 +162,7 @@ export const useStepNavigation = <T,>({
         updateStepperState(currentState);
         setCurrentStep(targetStep);
       } catch (error) {
-        console.error('Error in step navigation:', error);
+        console.error("Error in step navigation:", error);
         // Don't re-throw the error, just log it
       } finally {
         setLoading(false);
@@ -167,8 +177,8 @@ export const useStepNavigation = <T,>({
       saveToLocalStorage,
       setLoading,
       updateStepperState,
-      setCurrentStep,
-    ],
+      setCurrentStep
+    ]
   );
 
   const onNext = useCallback(
@@ -178,13 +188,14 @@ export const useStepNavigation = <T,>({
       updateGeneralStates?: UpdateGeneralStateInput<T>;
     }) => {
       if (currentStep >= stepperState.generalInfo.totalSteps) {
-        console.warn('You are already on the last step.');
+        console.warn("You are already on the last step.");
+
         return;
       }
 
       await executeStepNavigation(currentStep + 1, args);
     },
-    [currentStep, stepperState.generalInfo.totalSteps, executeStepNavigation],
+    [currentStep, stepperState.generalInfo.totalSteps, executeStepNavigation]
   );
 
   const onPrev = useCallback(
@@ -194,13 +205,14 @@ export const useStepNavigation = <T,>({
       updateGeneralStates?: UpdateGeneralStateInput<T>;
     }) => {
       if (currentStep === 0) {
-        console.warn('You are already on the first step.');
+        console.warn("You are already on the first step.");
+
         return;
       }
 
       await executeStepNavigation(currentStep - 1, args);
     },
-    [currentStep, executeStepNavigation],
+    [currentStep, executeStepNavigation]
   );
 
   const goToStep = useCallback(
@@ -210,7 +222,7 @@ export const useStepNavigation = <T,>({
         onCompleteStep?: StepStateCallback<T>;
         updateStepsStatus?: UpdateStepInput[];
         updateGeneralStates?: { stepIndex?: number; data: Partial<T> };
-      },
+      }
     ) => {
       if (nextStep < 0 || nextStep >= stepperState.generalInfo.totalSteps) {
         throw new Error(`The step ${nextStep} does not exist.`);
@@ -224,15 +236,16 @@ export const useStepNavigation = <T,>({
       if (validationCanAccess && nextStep > currentStep) {
         if (!stepperState.steps[nextStep]?.canAccess) {
           console.warn(
-            `The step ${nextStep} is not accessible because it is not available.`,
+            `The step ${nextStep} is not accessible because it is not available.`
           );
+
           return;
         }
       }
 
       await executeStepNavigation(nextStep, args);
     },
-    [currentStep, stepperState, config, executeStepNavigation],
+    [currentStep, stepperState, config, executeStepNavigation]
   );
 
   return { onNext, onPrev, goToStep };
