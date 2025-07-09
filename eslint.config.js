@@ -3,7 +3,6 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import prettier from "eslint-plugin-prettier";
 import reactHooks from "eslint-plugin-react-hooks";
-import storybook from "eslint-plugin-storybook";
 import globals from "globals";
 
 export default [
@@ -21,12 +20,10 @@ export default [
     plugins: {
       "@typescript-eslint": tseslint,
       "react-hooks": reactHooks,
-      storybook,
       prettier
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      ...storybook.configs.recommended.rules,
       ...prettier.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
       "require-jsdoc": "off",
@@ -127,7 +124,5 @@ export default [
       "no-else-return": "error",
       "prettier/prettier": "warn"
     }
-  },
-  ...storybook.configs["flat/recommended"],
-  ...storybook.configs["flat/recommended"]
+  }
 ];

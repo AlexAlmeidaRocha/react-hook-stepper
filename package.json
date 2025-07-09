@@ -1,6 +1,6 @@
 {
   "name": "react-hook-stepper",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A simple and customizable multi-step stepper component for React using hooks.",
   "type": "module",
   "main": "dist/index.cjs.js",
@@ -48,7 +48,6 @@
     "eslint": "^9.25.0",
     "eslint-plugin-prettier": "^5.5.1",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-storybook": "^9.0.16",
     "globals": "^16.3.0",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
