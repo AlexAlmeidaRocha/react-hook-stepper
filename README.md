@@ -918,6 +918,49 @@ const GoodStep = () => {
 };
 ```
 
+### 3. Use updateGeneralState
+
+```tsx
+// ❌ PROBLEM: This approach does not work because the state may not be synchronized
+const ProblematicComponent = () => {
+  const { onNext, updateGeneralState } = useStepper();
+
+  const handleNextProblematic = () => {
+    // ❌ This might not save the information correctly
+      updateGeneralState({
+        data: {
+        preferences: { notifications, theme }
+        }
+      });
+      onNext(); // Called immediately, state may not be updated yet
+  };
+
+  return (
+    // ...
+  );
+};
+
+// ✅ SOLUTION 1: Use onNext with updateGeneralStates (RECOMMENDED)
+const SolutionComponent1 = () => {
+  const { onNext } = useStepper();
+
+  const handleNext = () => {
+    // ✅ Pass the data directly to onNext
+    onNext({
+      updateGeneralStates: {
+        data: {
+          preferences: { notifications, theme }
+        }
+      }
+    });
+  };
+
+  return (
+    // ...
+  );
+};
+```
+
 ## 🔧 Troubleshooting
 
 ### TypeScript Issues

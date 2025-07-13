@@ -51,31 +51,56 @@ export const useStepNavigation = <T,>({
     (
       steps: StepperState<T>["steps"],
       currentStepIndex: number,
-      targetStepIndex?: number
+      targetStepIndex?: number,
+      isMovingForward = true
     ) => {
       return steps.map((step, index) => {
         const isCurrentStep = index === currentStepIndex;
         const isTargetStep =
           targetStepIndex !== undefined && index === targetStepIndex;
 
-        if (isCurrentStep) {
+        if (isCurrentStep && isMovingForward) {
+          // When moving forward, mark current step as completed
           return {
             ...step,
             canAccess: config.next?.currentStep?.canAccess ?? step.canAccess,
-            isCompleted:
-              config.next?.currentStep?.isCompleted ?? step.isCompleted,
+            isCompleted: config.next?.currentStep?.isCompleted ?? true,
             isOptional: config.next?.currentStep?.isOptional ?? step.isOptional,
             canEdit: config.next?.currentStep?.canEdit ?? step.canEdit
           };
         }
 
-        if (isTargetStep) {
+        if (isCurrentStep && !isMovingForward) {
+          // When moving backward, use prev config
           return {
             ...step,
-            canAccess: config.next?.nextStep?.canAccess ?? step.canAccess,
+            canAccess: config.prev?.currentStep?.canAccess ?? step.canAccess,
+            isCompleted:
+              config.prev?.currentStep?.isCompleted ?? step.isCompleted,
+            isOptional: config.prev?.currentStep?.isOptional ?? step.isOptional,
+            canEdit: config.prev?.currentStep?.canEdit ?? step.canEdit
+          };
+        }
+
+        if (isTargetStep && isMovingForward) {
+          // When moving forward, allow access to next step
+          return {
+            ...step,
+            canAccess: config.next?.nextStep?.canAccess ?? true,
             isCompleted: config.next?.nextStep?.isCompleted ?? step.isCompleted,
             isOptional: config.next?.nextStep?.isOptional ?? step.isOptional,
             canEdit: config.next?.nextStep?.canEdit ?? step.canEdit
+          };
+        }
+
+        if (isTargetStep && !isMovingForward) {
+          // When moving backward, use prev config for target step
+          return {
+            ...step,
+            canAccess: config.prev?.prevStep?.canAccess ?? step.canAccess,
+            isCompleted: config.prev?.prevStep?.isCompleted ?? step.isCompleted,
+            isOptional: config.prev?.prevStep?.isOptional ?? step.isOptional,
+            canEdit: config.prev?.prevStep?.canEdit ?? step.canEdit
           };
         }
 
@@ -86,14 +111,9 @@ export const useStepNavigation = <T,>({
   );
 
   const saveToLocalStorage = useCallback(
-    (state: StepperState<T>, targetStep: number) => {
+    (state: StepperState<T>) => {
       if (config.saveLocalStorage) {
-        // Remove from localStorage if it's the last step
-        if (targetStep === state.generalInfo.totalSteps) {
-          localStorage.removeItem("stepperState");
-        } else {
-          localStorage.setItem("stepperState", JSON.stringify(state));
-        }
+        localStorage.setItem("stepperState", JSON.stringify(state));
       }
     },
     [config.saveLocalStorage]
@@ -123,10 +143,12 @@ export const useStepNavigation = <T,>({
         const updatedSteps = updateStepsStatus(currentState, statusUpdates);
 
         // Update step states based on navigation
+        const isMovingForward = targetStep > currentStep;
         const finalSteps = updateStepStates(
           updatedSteps,
           currentStep,
-          targetStep
+          targetStep,
+          isMovingForward
         );
 
         // Calculate progress
@@ -142,7 +164,7 @@ export const useStepNavigation = <T,>({
           generalInfo: {
             ...currentState.generalInfo,
             currentProgress:
-              targetStep / (currentState.generalInfo.totalSteps || 1),
+              (targetStep + 1) / (currentState.generalInfo.totalSteps || 1),
             ...progress
           },
           generalState: {
@@ -152,7 +174,7 @@ export const useStepNavigation = <T,>({
         };
 
         // Save to localStorage
-        saveToLocalStorage(currentState, targetStep);
+        saveToLocalStorage(currentState);
 
         // Execute callback if provided
         if (onCompleteStep) {
@@ -187,7 +209,17 @@ export const useStepNavigation = <T,>({
       updateStepsStatus?: UpdateStepInput[];
       updateGeneralStates?: UpdateGeneralStateInput<T>;
     }) => {
-      if (currentStep >= stepperState.generalInfo.totalSteps) {
+      // If we're already on the last step and trying to go next,
+      // execute onCompleteStep and clean localStorage
+      if (currentStep >= stepperState.generalInfo.totalSteps - 1) {
+        if (config.saveLocalStorage) {
+          localStorage.removeItem("stepperState");
+        }
+
+        if (args?.onCompleteStep) {
+          await args.onCompleteStep(stepperState);
+        }
+
         console.warn("You are already on the last step.");
 
         return;
@@ -195,7 +227,7 @@ export const useStepNavigation = <T,>({
 
       await executeStepNavigation(currentStep + 1, args);
     },
-    [currentStep, stepperState.generalInfo.totalSteps, executeStepNavigation]
+    [currentStep, executeStepNavigation, config.saveLocalStorage, stepperState]
   );
 
   const onPrev = useCallback(
@@ -236,7 +268,8 @@ export const useStepNavigation = <T,>({
       if (validationCanAccess && nextStep > currentStep) {
         if (!stepperState.steps[nextStep]?.canAccess) {
           console.warn(
-            `The step ${nextStep} is not accessible because it is not available.`
+            `The step ${nextStep} is not accessible because it is not ` +
+              "available."
           );
 
           return;

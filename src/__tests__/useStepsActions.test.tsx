@@ -4,8 +4,13 @@ import { act, renderHook } from "@testing-library/react";
 import { StepConfig, StepperConfig, StepperState } from "../types/StepTypes";
 import { useStepsActions } from "../useStepsActions";
 
+// Test data type
+interface TestData {
+  testData: string;
+}
+
 // Mock data
-const mockStepperState: StepperState<any> = {
+const mockStepperState: StepperState<TestData> = {
   generalInfo: {
     totalSteps: 3,
     currentProgress: 0,
@@ -98,17 +103,31 @@ describe("useStepsActions", () => {
             totalSteps: 3,
             currentProgress: 0,
             completedProgress: 0,
-            canAccessProgress: 0
+            canAccessProgress: 1 / 3 // Only first step is accessible
           }),
-          steps: expect.arrayContaining([
+          steps: [
             expect.objectContaining({
               name: "Step 1",
-              canAccess: true,
-              canEdit: true,
+              canAccess: true, // First step is accessible
+              canEdit: false,
+              isOptional: false,
+              isCompleted: false
+            }),
+            expect.objectContaining({
+              name: "Step 2",
+              canAccess: false, // Subsequent steps are not accessible by default
+              canEdit: false,
+              isOptional: false,
+              isCompleted: false
+            }),
+            expect.objectContaining({
+              name: "Step 3",
+              canAccess: false,
+              canEdit: false,
               isOptional: false,
               isCompleted: false
             })
-          ])
+          ]
         })
       );
     });
@@ -289,8 +308,17 @@ describe("useStepsActions", () => {
 
     it("should throw error for invalid step data", () => {
       const { result } = renderUseStepsActions();
+      const invalidData = { invalidProperty: true };
       const updates = [
-        { stepIndex: 0, data: { invalidProperty: true } as any }
+        {
+          stepIndex: 0,
+          data: invalidData as unknown as Partial<{
+            canAccess: boolean;
+            canEdit: boolean;
+            isOptional: boolean;
+            isCompleted: boolean;
+          }>
+        }
       ];
 
       expect(() => {

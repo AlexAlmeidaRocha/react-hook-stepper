@@ -33,12 +33,13 @@ export const useStepsActions = <T,>({
           totalSteps: steps.length,
           currentProgress: 0,
           completedProgress: 0,
-          canAccessProgress: 0
+          canAccessProgress: steps.length > 0 ? 1 / steps.length : 0 // Only first step should be accessible
         },
-        steps: steps.map((step: StepConfig) => ({
+        steps: steps.map((step: StepConfig, index) => ({
           name: step.name,
-          canAccess: step.canAccess !== undefined ? step.canAccess : true, // Default to true to allow navigation
-          canEdit: step.canEdit !== undefined ? step.canEdit : true,
+          canAccess:
+            step.canAccess !== undefined ? step.canAccess : index === 0, // Only first step is accessible by default
+          canEdit: step.canEdit !== undefined ? step.canEdit : false, // Default to false
           isOptional: step.isOptional || false,
           isCompleted: step.isCompleted || false
         }))

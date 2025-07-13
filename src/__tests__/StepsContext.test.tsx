@@ -172,9 +172,19 @@ describe("StepsContext", () => {
   });
 
   it("should handle navigation to last step", async () => {
+    // Config with validation disabled for direct navigation
+    const configWithoutValidation: StepperConfig = {
+      ...mockConfig,
+      validations: {
+        goToStep: {
+          canAccess: false // Disable access validation
+        }
+      }
+    };
+
     const TestComponentWithStepper = () => {
       const context = useContext(StepsContext);
-      useStepper(mockConfig);
+      useStepper(configWithoutValidation);
 
       if (!context) {
         return <div>No context</div>;
